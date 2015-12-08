@@ -27,7 +27,7 @@
 //--   ->  <- 1 clock cycle
 //--
 //---------------------------------------------------------------------------------------
-module baudgen #(
+module baudgen_tx #(
           parameter BAUDRATE = `B115200  //-- Default baudrate
 )(
           input wire clk,               //-- System clock
