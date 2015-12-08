@@ -1,4 +1,3 @@
-//-- Refactoring and translating into English in progress.....
 //----------------------------------------------------------------------------
 //-- Asynchronous serial transmitter Unit
 //------------------------------------------
@@ -28,7 +27,7 @@ module uart_tx #(
          input wire start,      //-- Set to 1 for starting the transmission
          input wire [7:0] data, //-- Byte to transmit
          output reg tx,         //-- Serial data output
-         output wire ready      //-- Transmitter ready (1) / busy (0)
+         output reg ready      //-- Transmitter ready (1) / busy (0)
        );
 
 
@@ -42,8 +41,8 @@ reg [3:0] bitc;
 reg [7:0] data_r;
 
 //--------- control signals
-wire load;    //-- Load the shifter register / reset
-wire baud_en; //-- Enable the baud generator
+reg load;    //-- Load the shifter register / reset
+reg baud_en; //-- Enable the baud generator
 
 //-------------------------------------
 //-- DATAPATH
@@ -103,59 +102,57 @@ BAUD0 (
 //-- CONTROLLER
 //------------------------------
 
-//-- Estados del automata finito del controlador
-localparam IDLE  = 0;  //-- Estado de reposo
-localparam START = 1;  //-- Comienzo de transmision
-localparam TRANS = 2;  //-- Estado: transmitiendo dato
+//-- fsm states
+localparam IDLE  = 0;  //-- Idle state
+localparam START = 1;  //-- Start transmission
+localparam TRANS = 2;  //-- Transmitting data
 
-//-- Estados del autómata del controlador
+//-- Registers for storing the states
 reg [1:0] state;
+reg [1:0] next_state;
 
-//-- Transiciones entre los estados
+//-- Transition between states
 always @(posedge clk)
-
-  //-- Reset del automata. Al estado inicial
-  if (rstn == 0)
+  if (!rstn)
     state <= IDLE;
-
   else
-    //-- Transiciones a los siguientes estados
-    case (state)
+    state <= next_state;
 
-      //-- Estado de reposo. Se sale cuando la señal
-      //-- de start se pone a 1
-      IDLE:
-        if (start == 1)
-          state <= START;
-        else
-          state <= IDLE;
+//-- Control signal generation and next states
+always @(*) begin
 
-      //-- Estado de comienzo. Prepararse para empezar
-      //-- a transmitir. Duracion: 1 ciclo de reloj
-      START:
-        state <= TRANS;
+  //-- Default values
+  next_state = state;      //-- Stay in the same state by default
+  load = 0;
+  baud_en = 0;
+  ready = 0;
 
-      //-- Transmitiendo. Se esta en este estado hasta
-      //-- que se hayan transmitido todos los bits pendientes
-      TRANS:
-        if (bitc == 11)
-          state <= IDLE;
-        else
-          state <= TRANS;
+  case (state)
 
-      //-- Por defecto. NO USADO. Puesto para
-      //-- cubrir todos los casos y que no se generen latches
-      default:
-        state <= IDLE;
+    //-- Idle state
+    //-- Remain in this state until start is 1
+    IDLE: begin
+      ready = 1;
+      if (start == 1)
+        next_state = START;
+    end
 
-    endcase
+    //-- 1 cycle long
+    //-- turn on the baudrate generator and the load the shift register
+    START: begin
+      load = 1;
+      baud_en = 1;
+      next_state = TRANS;
+    end
 
-//-- Generacion de las microordenes
-assign load = (state == START) ? 1 : 0;
-assign baud_en = (state == IDLE) ? 0 : 1;
+    //-- Stay here until all the bits have been sent
+    TRANS: begin
+      baud_en = 1;
+      if (bitc == 11)
+        next_state <= IDLE;
+    end
 
-//-- Señal de salida. Esta a 1 cuando estamos en reposo (listos
-//-- para transmitir). En caso contrario esta a 0
-assign ready = (state == IDLE) ? 1 : 0;
+  endcase
+end
 
 endmodule
