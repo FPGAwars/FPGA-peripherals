@@ -4,7 +4,7 @@
 //-- (C) BQ. December 2015. Written by Juan Gonzalez (Obijuan)
 //-- GPL license
 //----------------------------------------------------------------------------
-//-- TODO: Test the uart_tx at all the standard baudrates:
+//-- Tested at all the standard baudrates:
 //-- 300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200
 //----------------------------------------------------------------------------
 //-- Although this transmitter has been written from the scratch, it has been
