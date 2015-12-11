@@ -3,4 +3,4 @@ Collection of open-source peripherals in Verilog. All have been synthetized and 
 
 # Documentation
 
-(Access to the github wiki)[https://github.com/Obijuan/FPGA-peripherals/wiki]
+[Access to the github wiki](https://github.com/Obijuan/FPGA-peripherals/wiki)
