@@ -1,4 +1,4 @@
-# FPGA-peripherals
+# FPGA Peripherals
 Collection of open-source peripherals in Verilog. All have been synthetized and tested on
 an **Icestick FPGA board**, using the open-source toolchain from the
 [Icestorm project](http://www.clifford.at/icestorm/)
