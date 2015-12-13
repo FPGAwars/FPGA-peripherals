@@ -1,9 +1,8 @@
 //-------------------------------------------------------------------
-//-- scicad1_tb
-//-- Banco de pruebas para el ejemplo de transmision continua de
-//-- cadenas
+//-- txchar_tb.v
+//-- Testbench for the simulation of the txchar.v example
 //-------------------------------------------------------------------
-//-- BQ September 2015. Written by Juan Gonzalez (Obijuan)
+//-- (c) BQ December 2015. Written by Juan Gonzalez (Obijuan)
 //-------------------------------------------------------------------
 //-- GPL License
 //-------------------------------------------------------------------
@@ -15,54 +14,48 @@
 
 module txchar_tb();
 
-//-- Baudios con los que realizar la simulacion
+//-- Baudrate for the simulation
 localparam BAUDRATE = `B115200;
 
-//-- Tics de reloj para envio de datos a esa velocidad
-//-- Se multiplica por 2 porque el periodo del reloj es de 2 unidades
-localparam BITRATE = (BAUDRATE << 1);
+//-- clock tics needed for sending one serial package
+localparam SERIAL_CAR = (BAUDRATE * 10);
 
-//-- Tics necesarios para enviar una trama serie completa, mas un bit adicional
-localparam FRAME = (BITRATE * 11);
-
-//-- Tiempo entre dos bits enviados
-localparam FRAME_WAIT = (BITRATE * 4);
-
-//-- Registro para generar la señal de reloj
+//-- System clock
 reg clk = 0;
 
-//-- Linea de tranmision
+//-- Transmission line
 wire tx;
 
-//-- Simulacion de la señal dtr
-reg dtr = 0;
+//-- Reset
+reg rstn = 0;
 
-//-- Instanciar el componente
+//-- Instantiate the entity the character transmitter
 txchar #(.BAUDRATE(BAUDRATE))
   dut(
     .clk(clk),
-    .rstn(dtr),
+    .rstn(rstn),
     .tx(tx)
   );
 
-//-- Generador de reloj. Periodo 2 unidades
+//-- Clock generator
 always
   # 0.5 clk <= ~clk;
 
 
-//-- Proceso al inicio
 initial begin
 
-  //-- Fichero donde almacenar los resultados
+  //-- File where to store the simulation
   $dumpfile("examples/txchar_tb.vcd");
   $dumpvars(0, txchar_tb);
 
-  #1 dtr <= 0;
+  //-- Activate reset
+  #1 rstn <= 0;
 
-  //-- Comenzar primer envio
-  #5 dtr <= 1;
+  //-- Disable the reset. The transmission begins!
+  #5 rstn <= 1;
 
-  #(FRAME * 11) $display("FIN de la simulacion");
+  //-- Wait for 3 characters and finish
+  #(SERIAL_CAR * 3) $display("FIN de la simulacion");
   $finish;
 end
 

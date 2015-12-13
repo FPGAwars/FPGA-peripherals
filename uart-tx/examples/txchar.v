@@ -1,10 +1,13 @@
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
 //-- txchar: Uart_tx example 1
 //-- Continuous transmission of a character when the DTR signal is activated
-//----------------------------------------------------------------------------
+//-- The reset signal is connected to the dtr signal (in file txchar.pcf)
+//-- Fot this example to work is necessary to open a serial terminal (gtkterm for example)
+//-- and deactivate DTR. A lot of "A" will be received on the terminal
+//-----------------------------------------------------------------------------------------
 //-- (C) BQ. December 2015. Written by Juan Gonzalez (Obijuan)
 //-- GPL license
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
 `default_nettype none
 `include "baudgen.vh"
 
@@ -17,18 +20,15 @@ module txchar #(
           output wire tx    //-- Serial data output
 );
 
-wire ready;
-
-//-- Instanciar la Unidad de transmision
+//-- Serial Unit instantation
 uart_tx #(.BAUDRATE(BAUDRATE))
   TX0 (
     .clk(clk),
     .rstn(rstn),
-    .data("A"),
-    .start(1'b1),
-    .ready(ready),
+    .data("A"),    //-- Fixed character to transmit (always the same)
+    .start(1'b1),  //-- Start signal always set to 1
     .tx(tx)
-  );
+  );               //-- Port ready not used
 
 
 endmodule
