@@ -1,7 +1,7 @@
 #-----------------------------------------------------
 #-- Project 1
 #-----------------------------------------------------
-NAME = scicad1
+NAME = examples/txchar
 DEPS = uart_tx.v baudgen_tx.v
 
 #------------- Simulation of project 1 ---------
@@ -47,6 +47,6 @@ prog: $(NAME).bin
 
 #-- Clean the project
 clean:
-	rm -f *.bin *.txt *.blif *.out *.vcd *~
+	rm -f examples/*.bin examples/*.txt examples/*.blif examples/*.out examples/*.vcd *~ examples/*~
 
 .PHONY: all clean

@@ -1,0 +1,26 @@
+[*]
+[*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
+[*] Sun Dec 13 20:12:55 2015
+[*]
+[dumpfile] "/home/obijuan/develop/FPGA-peripherals/uart-tx/txchar_tb.vcd"
+[dumpfile_mtime] "Sun Dec 13 20:11:46 2015"
+[dumpfile_size] 991575
+[savefile] "/home/obijuan/develop/FPGA-peripherals/uart-tx/txchar_tb.gtkw"
+[timestart] 0
+[size] 1000 600
+[pos] 208 0
+*-17.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] txchar_tb.
+[treeopen] txchar_tb.dut.
+[sst_width] 223
+[signals_width] 94
+[sst_expanded] 1
+[sst_vpaned_height] 160
+@28
+txchar_tb.clk
+txchar_tb.dtr
+txchar_tb.tx
+@29
+txchar_tb.dut.TX0.clk_baud
+[pattern_trace] 1
+[pattern_trace] 0
