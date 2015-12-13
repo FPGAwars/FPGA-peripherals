@@ -79,7 +79,10 @@ always @(posedge clk)
 //-- When load (=1) the counter is reset
 //-- When load = 0, the sent bits are counted (with the raising edge of clk_baud)
 always @(posedge clk)
-  if (load == 1)
+  if (!rstn)
+    bitc <= 0;
+
+  else if (load == 1)
     bitc <= 0;
   else if (load == 0 && clk_baud == 1)
     bitc <= bitc + 1;
