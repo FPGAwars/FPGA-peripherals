@@ -93,6 +93,7 @@ always @(posedge clk)
 //-- Baud generator
 baudgen_tx #( .BAUDRATE(BAUDRATE))
 BAUD0 (
+    .rstn(rstn),
     .clk(clk),
     .clk_ena(baud_en),
     .clk_out(clk_baud)
