@@ -17,6 +17,9 @@ sint: $(NAME).bin
 #-- Set the dependencies for synthetization
 $(NAME).blif: $(NAME).v $(DEPS)
 
+#---- Upload into FPGA of project 1 ------
+prog: $(NAME).bin
+	iceprog $<
 
 #--------------------------------
 #-- General Compilation rules
