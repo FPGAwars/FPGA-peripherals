@@ -21,6 +21,29 @@ $(NAME).blif: $(NAME).v $(DEPS)
 prog: $(NAME).bin
 	iceprog $<
 
+#-----------------------------------------------------
+#-- Project 2
+#-----------------------------------------------------
+NAME2 = examples/txstr
+DEPS2 = uart_tx.v baudgen_tx.v
+
+#------------- Simulation---------
+sim2: $(NAME2)_tb.vcd
+	gtkwave $< $(<:.vcd=.gtkw) &
+
+#-- set the dependencies for simulation
+$(NAME2)_tb.vcd: $(NAME2).v $(DEPS2) $(NAME2)_tb.v
+
+#---- Synthesis  ------------------
+sint2: $(NAME2).bin
+
+#-- Set the dependencies for synthetization
+$(NAME2).blif: $(NAME2).v $(DEPS2)
+
+#---- Upload into FPGA ------
+prog2: $(NAME2).bin
+	iceprog $<
+
 #--------------------------------
 #-- General Compilation rules
 #--------------------------------
