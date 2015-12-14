@@ -30,12 +30,11 @@ wire tx;
 reg rstn = 0;
 
 //-- Instantiate the entity the character transmitter
-txchar #(.BAUDRATE(BAUDRATE))
-  dut(
+txchar  dut(
     .clk(clk),
     .rstn(rstn),
     .tx(tx)
-  );
+);
 
 //-- Clock generator
 always
