@@ -9,19 +9,17 @@
 //-- Comprobado su funcionamiento a todas las velocidades estandares:
 //-- 300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200
 //----------------------------------------------------------------------------
+`default_nettype none
 `include "baudgen.vh"
 
 //-- Modulo para envio de una cadena por el puerto serie
 module txstr (input wire clk,   //-- Reloj del sistema
               input wire dtr,   //-- Señal de DTR
-              output wire tx   //-- Salida de datos serie
+              output wire tx    //-- Salida de datos serie
              );
 
 //-- Velocidad a la que hacer las pruebas
 parameter BAUD = `B115200;
-
-//-- Reset
-reg rstn = 0;
 
 //-- Señal de listo del transmisor serie
 wire ready;
@@ -38,14 +36,16 @@ reg transmit;
 reg cena;      //-- Counter enable (cuando cena = 1)
 reg start;  //-- Transmitir cadena (cuando transmit = 1)
 
-
-//------------------------------------------------
-//-- 	RUTA DE DATOS
-//------------------------------------------------
+//-- Reset
+reg rstn = 0;
 
 //-- Inicializador
 always @(posedge clk)
   rstn <= 1;
+
+//------------------------------------------------
+//-- 	RUTA DE DATOS
+//------------------------------------------------
 
 //-- Instanciar la Unidad de transmision
 uart_tx #(.BAUDRATE(BAUD))
