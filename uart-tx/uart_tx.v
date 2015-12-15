@@ -28,7 +28,7 @@ module uart_tx #(
          input wire [7:0] data, //-- Byte to transmit
          output reg tx,         //-- Serial data output
          output reg ready      //-- Transmitter ready (1) / busy (0)
-       );
+);
 
 
 //-- Transmission clock
@@ -129,7 +129,6 @@ always @(*) begin
   next_state = state;      //-- Stay in the same state by default
   load = 0;
   baud_en = 0;
-  ready = 0;
 
   case (state)
 
@@ -146,15 +145,20 @@ always @(*) begin
     START: begin
       load = 1;
       baud_en = 1;
+      ready = 0;
       next_state = TRANS;
     end
 
     //-- Stay here until all the bits have been sent
     TRANS: begin
       baud_en = 1;
+      ready = 0;
       if (bitc == 11)
-        next_state <= IDLE;
+        next_state = IDLE;
     end
+
+    default:
+      ready = 0;
 
   endcase
 end
