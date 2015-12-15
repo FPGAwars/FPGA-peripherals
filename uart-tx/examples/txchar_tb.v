@@ -54,7 +54,7 @@ initial begin
   #5 rstn <= 1;
 
   //-- Wait for 3 characters and finish
-  #(SERIAL_CAR * 3) $display("FIN de la simulacion");
+  #(SERIAL_CAR * 3) $display("END of simulation");
   $finish;
 end
 
