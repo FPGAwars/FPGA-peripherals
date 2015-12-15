@@ -1,0 +1,24 @@
+[*]
+[*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
+[*] Tue Dec 15 17:53:16 2015
+[*]
+[dumpfile] "/home/obijuan/development/FPGA-peripherals/uart-rx/rxleds_tb.vcd"
+[dumpfile_mtime] "Tue Dec 15 17:52:19 2015"
+[dumpfile_size] 122735
+[savefile] "/home/obijuan/development/FPGA-peripherals/uart-rx/rxleds_tb.gtkw"
+[timestart] 0
+[size] 1000 600
+[pos] -83 -144
+*-11.386868 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 223
+[signals_width] 102
+[sst_expanded] 1
+[sst_vpaned_height] 160
+@28
+rxleds_tb.clk
+@22
+rxleds_tb.leds[3:0]
+@29
+rxleds_tb.rx
+[pattern_trace] 1
+[pattern_trace] 0
