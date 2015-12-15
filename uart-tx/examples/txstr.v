@@ -1,9 +1,9 @@
 //-----------------------------------------------------------------------------------------
-//-- txchar: Uart_tx example 1
-//-- Continuous transmission of a character when the DTR signal is activated
-//-- The reset signal is connected to the dtr signal (in file txchar.pcf)
+//-- txstr: Uart_tx example 2
+//-- Transmission of string
+//-- The reset signal is connected to the dtr signal (in file txstr.pcf)
 //-- Fot this example to work is necessary to open a serial terminal (gtkterm for example)
-//-- and deactivate DTR. A lot of "A" will be received on the terminal
+//-- and deactivate DTR. Every time a reset is done, a string appears on the terminal
 //-- Fixed BAUDRATE: 115200
 //-----------------------------------------------------------------------------------------
 //-- (C) BQ. December 2015. Written by Juan Gonzalez (Obijuan)
@@ -13,68 +13,71 @@
 `include "baudgen.vh"
 
 //-- Top entity
-module txstr (
+module txstr #(
+          parameter BAUDRATE = `B115200
+)(
           input wire clk,   //-- System clock
           input wire rstn,  //-- Reset (active low)
-          output wire tx,    //-- Serial data output
-          output reg [4:0] leds
+          output wire tx    //-- Serial data output
 );
 
 
 //-- Serial Unit instantation
 uart_tx #(
-    .BAUDRATE(`B115200)  //-- Set the baudrate
+    .BAUDRATE(BAUDRATE)  //-- Set the baudrate
 
   ) TX0 (
     .clk(clk),
     .rstn(rstn),
-    .data(data),    //-- Fixed character to transmit (always the same)
-    .start(start),  //-- Start signal always set to 1
+    .data(data),
+    .start(start),
     .tx(tx),
     .ready(ready)
 );
 
+//-- Connecting wires
 wire ready;
 reg start = 0;
 reg [7:0] data;
 
-//-- Multiplexor con los caracteres de la cadena a transmitir
-//-- se seleccionan mediante la señal car_count
+//-- Multiplexer with the 8-character string to transmit
 always @*
-  case (car_count)
+  case (char_count)
     8'd0: data <= "H";
-    8'd1: data <= "o";
+    8'd1: data <= "e";
     8'd2: data <= "l";
-    8'd3: data <= "a";
-    8'd4: data <= "!";
-    8'd5: data <= ".";
+    8'd3: data <= "l";
+    8'd4: data <= "o";
+    8'd5: data <= "!";
     8'd6: data <= ".";
     8'd7: data <= ".";
     default: data <= ".";
   endcase
 
-//-- Contador de caracteres
-//-- Cuando la microorden cena esta activada, se incrementa
-reg [2:0] car_count;
+//-- Characters counter
+//-- It only counts when the cena control signal is enabled
+reg [2:0] char_count;
 reg cena;                //-- Counter enable
 
 always @(posedge clk)
   if (!rstn)
-    car_count = 0;
+    char_count = 0;
   else if (cena)
-    car_count = car_count + 1;
+    char_count = char_count + 1;
 
 
-//------------- CONTROLLER
+//--------------------- CONTROLLER
 
 localparam INI = 0;
 localparam TXCAR = 1;
 localparam NEXTCAR = 2;
 localparam STOP = 3;
 
+//-- fsm state
 reg [1:0] state;
 reg [1:0] next_state;
 
+//-- Transition between states
 always @(posedge clk) begin
   if (!rstn)
     state <= INI;
@@ -82,26 +85,30 @@ always @(posedge clk) begin
     state <= next_state;
 end
 
+//-- Control signal generation and next states
 always @(*) begin
   next_state = state;
   start = 0;
   cena = 0;
-  leds = {3'b000, state};
 
   case (state)
+    //-- Initial state. Start the trasmission
     INI: begin
       start = 1;
       next_state = TXCAR;
     end
 
+    //-- Wait until one car is transmitted
     TXCAR: begin
       if (ready)
         next_state = NEXTCAR;
     end
 
+    //-- Increment the character counter
+    //-- Finish when it is the last character
     NEXTCAR: begin
       cena = 1;
-      if (car_count == 7)
+      if (char_count == 7)
         next_state = STOP;
       else
         next_state = INI;

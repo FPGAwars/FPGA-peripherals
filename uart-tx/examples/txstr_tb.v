@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------
-//-- txchar_tb.v
-//-- Testbench for the simulation of the txchar.v example
+//-- txstr_tb.v
+//-- Testbench for the simulation of the txstr.v example
 //-------------------------------------------------------------------
 //-- (c) BQ December 2015. Written by Juan Gonzalez (Obijuan)
 //-------------------------------------------------------------------
@@ -30,7 +30,10 @@ wire tx;
 reg rstn = 0;
 
 //-- Instantiate the entity the character transmitter
-txstr  dut(
+txstr #(
+    .BAUDRATE(BAUDRATE)
+)
+dut (
     .clk(clk),
     .rstn(rstn),
     .tx(tx)
@@ -54,7 +57,7 @@ initial begin
   #3 rstn <= 1;
 
   //-- Wait for 3 characters and finish
-  #(SERIAL_CAR * 10) $display("FIN de la simulacion");
+  #(SERIAL_CAR * 10) $display("END of simulation");
   $finish;
 end
 
