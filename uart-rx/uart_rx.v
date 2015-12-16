@@ -4,8 +4,8 @@
 //-- (C) BQ. December 2015. Written by Juan Gonzalez (Obijuan)
 //-- GPL license
 //----------------------------------------------------------------------------
-//-- Tested at all the standard baudrates:
-//--
+//-- Tested at the standard baudrates:
+//-- 300, 600, 1200, 4800, 9600, 19200, 38400, 115200
 //----------------------------------------------------------------------------
 //-- Although this transmitter has been written from the scratch, it has been
 //-- inspired by the one developed in the swapforth proyect by James Bowman
