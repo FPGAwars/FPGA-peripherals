@@ -70,6 +70,6 @@ prog2: $(NAME2).bin
 
 #-- Clean the project
 clean:
-	rm -f examples/*.bin examples/*.txt examples/*.blif examples/*.out examples/*.vcd *~ examples/*~
+	rm -f *.bin *.txt *.blif *.out *.vcd *~ *~
 
 .PHONY: all clean
