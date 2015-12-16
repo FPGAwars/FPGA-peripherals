@@ -49,11 +49,11 @@ reg load;    //-- Cargar dato recibido
 always @(posedge clk)
   rx_r <= rx;
 
-//-- Divisor para la generacion del reloj de llegada de datos 
+//-- Divisor para la generacion del reloj de llegada de datos
 baudgen_rx #(BAUD)
-  baudgen0 ( 
+  baudgen0 (
     .clk(clk),
-    .clk_ena(bauden), 
+    .clk_ena(bauden),
     .clk_out(clk_baud)
   );
 
@@ -88,8 +88,51 @@ always @(posedge clk)
 localparam IDLE = 2'd0;  //-- Estado de reposo
 localparam RECV = 2'd1;  //-- Recibiendo datos
 localparam LOAD = 2'd2;  //-- Almacenamiento del dato recibido
-localparam DAV = 2'd3;   //-- Señalizar dato disponible 
+localparam DAV = 2'd3;   //-- Señalizar dato disponible
 
+//-- Salidas de microordenes
+always @* begin
+  bauden <= (state == RECV) ? 1 : 0;
+  clear <= (state == IDLE) ? 1 : 0;
+  load <= (state == LOAD) ? 1 : 0;
+  rcv <= (state == DAV) ? 1 : 0;
+end
+
+reg [1:0] state;
+reg [1:0] next_state;
+
+//-- Transition between states
+always @(posedge clk)
+  if (!rstn)
+    state <= IDLE;
+  else
+    state <= next_state;
+
+always @(*) begin
+
+  //-- Default values
+  next_state = state;      //-- Stay in the same state by default
+  case(state)
+    IDLE:
+      if (rx_r == 0)
+        next_state = RECV;
+
+    RECV:
+      if (bitc == 4'd10)
+        next_state = LOAD;
+
+    LOAD:
+      next_state = DAV;
+
+    DAV:
+      next_state = IDLE;
+
+  endcase
+
+end
+
+
+/*
 reg [1:0] state;
 
 //-- Transiciones entre estados
@@ -102,14 +145,14 @@ always @(posedge clk)
     case (state)
 
       //-- Resposo
-      IDLE : 
+      IDLE :
         //-- Al llegar el bit de start se pasa al estado siguiente
-        if (rx_r == 0)  
+        if (rx_r == 0)
           state <= RECV;
         else
           state <= IDLE;
 
-      //--- Recibiendo datos      
+      //--- Recibiendo datos
       RECV:
         //-- Vamos por el ultimo bit: pasar al siguiente estado
         if (bitc == 4'd10)
@@ -137,8 +180,6 @@ always @* begin
   load <= (state == LOAD) ? 1 : 0;
   rcv <= (state == DAV) ? 1 : 0;
 end
-
+*/
 
 endmodule
-
-
