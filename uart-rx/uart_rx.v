@@ -90,14 +90,6 @@ localparam RECV = 2'd1;  //-- Recibiendo datos
 localparam LOAD = 2'd2;  //-- Almacenamiento del dato recibido
 localparam DAV = 2'd3;   //-- Señalizar dato disponible
 
-//-- Salidas de microordenes
-always @* begin
-  bauden <= (state == RECV) ? 1 : 0;
-  clear <= (state == IDLE) ? 1 : 0;
-  load <= (state == LOAD) ? 1 : 0;
-  rcv <= (state == DAV) ? 1 : 0;
-end
-
 reg [1:0] state;
 reg [1:0] next_state;
 
@@ -112,74 +104,41 @@ always @(*) begin
 
   //-- Default values
   next_state = state;      //-- Stay in the same state by default
+  bauden = 0;
+  clear = 0;
+  load = 0;
+
   case(state)
-    IDLE:
+    IDLE: begin
+      clear = 1;
+      rcv = 0;
       if (rx_r == 0)
         next_state = RECV;
+    end
 
-    RECV:
+    RECV: begin
+      bauden = 1;
+      rcv = 0;
       if (bitc == 4'd10)
         next_state = LOAD;
+    end
 
-    LOAD:
+    LOAD: begin
+      load = 1;
+      rcv = 0;
       next_state = DAV;
+    end
 
-    DAV:
+    DAV: begin
+      rcv = 1;
       next_state = IDLE;
+    end
+
+    default:
+      rcv = 0;
 
   endcase
 
 end
-
-
-/*
-reg [1:0] state;
-
-//-- Transiciones entre estados
-always @(posedge clk)
-
-  if (rstn == 0)
-    state <= IDLE;
-
-  else
-    case (state)
-
-      //-- Resposo
-      IDLE :
-        //-- Al llegar el bit de start se pasa al estado siguiente
-        if (rx_r == 0)
-          state <= RECV;
-        else
-          state <= IDLE;
-
-      //--- Recibiendo datos
-      RECV:
-        //-- Vamos por el ultimo bit: pasar al siguiente estado
-        if (bitc == 4'd10)
-          state <= LOAD;
-        else
-          state <= RECV;
-
-      //-- Almacenamiento del dato
-      LOAD:
-        state <= DAV;
-
-      //-- Señalizar dato disponible
-      DAV:
-        state <= IDLE;
-
-    default:
-      state <= IDLE;
-    endcase
-
-
-//-- Salidas de microordenes
-always @* begin
-  bauden <= (state == RECV) ? 1 : 0;
-  clear <= (state == IDLE) ? 1 : 0;
-  load <= (state == LOAD) ? 1 : 0;
-  rcv <= (state == DAV) ? 1 : 0;
-end
-*/
 
 endmodule
