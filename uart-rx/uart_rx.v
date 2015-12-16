@@ -13,7 +13,6 @@
 //-- https://github.com/jamesbowman/swapforth
 //--
 //----------------------------------------------------------------------------
-
 `default_nettype none
 
 `include "baudgen.vh"
@@ -29,29 +28,27 @@ module uart_rx #(
          output reg [7:0] data   //-- Data received
 );
 
-//-- Reloj para la recepcion
+//-- Transmission clock
 wire clk_baud;
 
-//-- Linea de recepcion registrada
-//-- Para cumplir reglas de diseño sincrono
+//-- Control signals
+reg bauden;  //-- Enable the baud generator
+reg clear;   //-- Clear the bit counter
+reg load;    //-- Load the received character into the data register
+
+
+//-------------------------------------------------------------------
+//--     DATAPATH
+//-------------------------------------------------------------------
+
+//-- The serial input is registered in order to follow the
+//-- synchronous design rules
 reg rx_r;
 
-//-- Microordenes
-reg bauden;  //-- Activar señal de reloj de datos
-reg clear;   //-- Poner a cero contador de bits
-reg load;    //-- Cargar dato recibido
-
-
-//-------------------------------------------------------------------
-//--     RUTA DE DATOS
-//-------------------------------------------------------------------
-
-//-- Registrar la señal de recepcion de datos
-//-- Para cumplir con las normas de diseño sincrono
 always @(posedge clk)
   rx_r <= rx;
 
-//-- Divisor para la generacion del reloj de llegada de datos
+//-- Baud generator
 baudgen_rx #(BAUDRATE)
   baudgen0 (
     .rstn(rstn),
@@ -60,7 +57,7 @@ baudgen_rx #(BAUDRATE)
     .clk_out(clk_baud)
   );
 
-//-- Contador de bits
+//-- Bit counter
 reg [3:0] bitc;
 
 always @(posedge clk)
@@ -70,7 +67,7 @@ always @(posedge clk)
     bitc <= bitc + 1;
 
 
-//-- Registro de desplazamiento para almacenar los bits recibidos
+//-- Shift register for storing the received bits
 reg [9:0] raw_data;
 
 always @(posedge clk)
@@ -78,21 +75,24 @@ always @(posedge clk)
     raw_data = {rx_r, raw_data[9:1]};
   end
 
-//-- Registro de datos. Almacenar el dato recibido
+//-- Data register. Store the character received
 always @(posedge clk)
   if (rstn == 0)
     data <= 0;
   else if (load)
     data <= raw_data[8:1];
 
-//-------------------------------------
-//-- CONTROLADOR
-//-------------------------------------
-localparam IDLE = 2'd0;  //-- Estado de reposo
-localparam RECV = 2'd1;  //-- Recibiendo datos
-localparam LOAD = 2'd2;  //-- Almacenamiento del dato recibido
-localparam DAV = 2'd3;   //-- Señalizar dato disponible
+//-------------------------------------------
+//-- CONTROLLER  (Finite state machine)
+//-------------------------------------------
 
+//-- Receiver states
+localparam IDLE = 2'd0;  //-- IDLEde reposo
+localparam RECV = 2'd1;  //-- Receiving data
+localparam LOAD = 2'd2;  //-- Storing the character received
+localparam DAV = 2'd3;   //-- Data is available
+
+//-- fsm states
 reg [1:0] state;
 reg [1:0] next_state;
 
@@ -103,6 +103,7 @@ always @(posedge clk)
   else
     state <= next_state;
 
+//-- Control signal generation and next states
 always @(*) begin
 
   //-- Default values
@@ -112,6 +113,9 @@ always @(*) begin
   load = 0;
 
   case(state)
+
+    //-- Idle state
+    //-- Remain in this state until a start bit is received in rx_r
     IDLE: begin
       clear = 1;
       rcv = 0;
@@ -119,6 +123,8 @@ always @(*) begin
         next_state = RECV;
     end
 
+    //-- Receiving state
+    //-- Turn on the baud generator and wait for the serial package to be received
     RECV: begin
       bauden = 1;
       rcv = 0;
@@ -126,12 +132,14 @@ always @(*) begin
         next_state = LOAD;
     end
 
+    //-- Store the received character in the data register (1 cycle)
     LOAD: begin
       load = 1;
       rcv = 0;
       next_state = DAV;
     end
 
+    //-- Data Available (1 cycle)
     DAV: begin
       rcv = 1;
       next_state = IDLE;
