@@ -1,61 +1,70 @@
 //-----------------------------------------------------------------------------
-//-- Generacion de baudios
-//-- Señal cuadrada, de periodo igual a la frecuencia de los baudios indicados
-//-- El ancho del pulso positivo es de 1 ciclo de reloj
-//--
-//-- Una vez habilitado, el pulso se genera justo en la mitad del periodo
-//-- Esto es necesario para implementar el receptor
-//--
-//-- (c) BQ. August 2015. written by Juan Gonzalez (obijuan)
+//-- Baudrate generator
+//-- It generates a square signal, with a frequency for communicating at the given
+//-- given baudrate
+//-- The output is set to 1 only during one clock cycle. The rest of the time is 0
+//-- Once enabled, the pulse is generated just in the middle of the period
+//-- This is necessary for the implementation of the receptor
+//--------------------------------------------------------------------------------
+//-- (c) BQ. December 2015. written by Juan Gonzalez (obijuan)
 //-----------------------------------------------------------------------------
 //-- GPL license
 //-----------------------------------------------------------------------------
 `include "baudgen.vh"
 
-//-- ENTRADAS:
-//--     -clk: Senal de reloj del sistema (12 MHZ en la iceStick)
-//--     -clk_ena: Habilitacion. 
-//--            1. funcionamiento normal. Emitiendo pulsos
-//--            0: Inicializado y parado. No se emiten pulsos
-//
-//-- SALIDAS:
-//--     - clk_out. Señal de salida para lograr la velocidad en baudios indicada
-//--                Anchura de 1 periodo de clk. SALIDA NO REGISTRADA
-module baudgen_rx(input wire clk,
-               input wire clk_ena, 
-               output wire clk_out);
+//----------------------------------------------------------------------------------------
+//-- baudgen module
+//--
+//-- INPUTS:
+//--     -clk: System clock (12 MHZ in the iceStick board)
+//--     -clk_ena: clock enable:
+//--            1. Normal working: The squeare signal is generated
+//--            0: stoped. Output always 0
+//-- OUTPUTS:
+//--     - clk_out: Output signal. Pulse width: 1 clock cycle. Output not registered
+//--                It tells the uart_rx when to sample the next bit
+//--                       __                                         __
+//--   ____________________| |________________________________________| |_____________________
+//--   |                  ->  <- 1 clock cycle   |
+//--   <-------  Period ------------------------->
+//--
+//---------------------------------------------------------------------------------------
+module baudgen_rx #(
+         parameter BAUDRATE = `B115200  //-- Default baudrate
+)(
+         input wire rstn,         //-- Reset (active low)
+         input wire clk,          //-- System clock
+         input wire clk_ena,      //-- Clock enable
+         output wire clk_out      //-- Bitrate Clock output
+);
 
-//-- Valor por defecto de la velocidad en baudios
-parameter M = `B115200;
+//-- Number of bits needed for storing the baudrate divisor
+localparam N = $clog2(BAUDRATE);
 
-//-- Numero de bits para almacenar el divisor de baudios
-localparam N = $clog2(M);
+//-- Value for generating the pulse in the middle of the period
+localparam M2 = (N >> 1);
 
-//-- Valor para generar pulso en la mitad del periodo
-localparam M2 = (M >> 1);
-
-//-- Registro para implementar el contador modulo M
+//-- Counter for implementing the divisor (it is a BAUDRATE module counter)
+//-- (when BAUDRATE is reached, it start again from 0)
 reg [N-1:0] divcounter = 0;
 
 //-- Contador módulo M
 always @(posedge clk)
 
-  if (clk_ena)
-    //-- Funcionamiento normal
-    divcounter <= (divcounter == M - 1) ? 0 : divcounter + 1;
-  else
-    //-- Contador "congelado" al valor maximo
-    divcounter <= M - 1;
+  if (!rstn)
+    divcounter = 0;
 
-//-- Sacar un pulso de anchura 1 ciclo de reloj si el generador
-//-- esta habilitado (clk_ena == 1)
-//-- en caso contrario se saca 0
-//-- Se pone a uno en la mitad del periodo
+  else if (clk_ena)
+    //-- Normal working: counting. When the maximum count is reached, it starts from 0
+    divcounter <= (divcounter == BAUDRATE - 1) ? 0 : divcounter + 1;
+  else
+    //-- Counter fixed to its maximum value
+    //-- When it is resumed it start from 0
+    divcounter <= BAUDRATE - 1;
+
+//-- The output is 1 when the counter is in the middle of the period, if clk_ena is active
+//-- It is 1 only for one system clock cycle
 assign clk_out = (divcounter == M2) ? clk_ena : 0;
 
 
 endmodule
-
-
-
-

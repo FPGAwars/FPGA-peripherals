@@ -1,11 +1,11 @@
 //----------------------------------------------------------------------------
-//-- Unidad de recepcion serie asincrona
+//-- Asynchronous serial receiver Unit
 //------------------------------------------
-//-- (C) BQ. October 2015. Written by Juan Gonzalez (Obijuan)
+//-- (C) BQ. December 2015. Written by Juan Gonzalez (Obijuan)
 //-- GPL license
 //----------------------------------------------------------------------------
-//-- Comprobado su funcionamiento a todas las velocidades estandares:
-//-- 300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200
+//-- Tested at all the standard baudrates:
+//--
 //----------------------------------------------------------------------------
 //-- Although this transmitter has been written from the scratch, it has been
 //-- inspired by the one developed in the swapforth proyect by James Bowman
@@ -18,14 +18,16 @@
 
 `include "baudgen.vh"
 
-module uart_rx (input wire clk,         //-- Reloj del sistema
-                input wire rstn,        //-- Reset
-                input wire rx,          //-- Linea de recepcion serie
-                output reg rcv,         //-- Indicar Dato disponible
-                output reg [7:0] data); //-- Dato recibo
-
-//-- Parametro: velocidad de recepcion
-parameter BAUD = `B115200;
+//-- Serial receiver unit module
+module uart_rx #(
+         parameter BAUDRATE = `B115200   //-- Default baudrate
+)(
+         input wire clk,         //-- System clock (12MHz in the ICEstick)
+         input wire rstn,        //-- Reset (Active low)
+         input wire rx,          //-- Serial data input
+         output reg rcv,         //-- Data is available (1)
+         output reg [7:0] data   //-- Data received
+);
 
 //-- Reloj para la recepcion
 wire clk_baud;
@@ -50,8 +52,9 @@ always @(posedge clk)
   rx_r <= rx;
 
 //-- Divisor para la generacion del reloj de llegada de datos
-baudgen_rx #(BAUD)
+baudgen_rx #(BAUDRATE)
   baudgen0 (
+    .rstn(rstn),
     .clk(clk),
     .clk_ena(bauden),
     .clk_out(clk_baud)
