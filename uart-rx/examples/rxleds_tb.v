@@ -25,12 +25,12 @@ localparam FRAME_WAIT = (BITRATE * 4);
 
 
 //----------------------------------------
-//-- Tarea para enviar caracteres serie  
+//-- Tarea para enviar caracteres serie
 //----------------------------------------
   task send_car;
     input [7:0] car;
   begin
-    rx <= 0;                 //-- Bit start 
+    rx <= 0;                 //-- Bit start
     #BITRATE rx <= car[0];   //-- Bit 0
     #BITRATE rx <= car[1];   //-- Bit 1
     #BITRATE rx <= car[2];   //-- Bit 2
@@ -64,7 +64,7 @@ rxleds #(BAUD)
   );
 
 //-- Generador de reloj. Periodo 2 unidades
-always 
+always
   # 1 clk <= ~clk;
 
 
@@ -72,16 +72,15 @@ always
 initial begin
 
   //-- Fichero donde almacenar los resultados
-  $dumpfile("rxleds_tb.vcd");
+  $dumpfile("examples/rxleds_tb.vcd");
   $dumpvars(0, rxleds_tb);
 
   //-- Enviar datos de prueba
   #BITRATE    send_car(8'h55);
   #FRAME_WAIT send_car("K");
 
-  #(FRAME_WAIT*4) $display("FIN de la simulacion");
+  #(FRAME_WAIT*4) $display("END of the simulation");
   $finish;
 end
 
 endmodule
-

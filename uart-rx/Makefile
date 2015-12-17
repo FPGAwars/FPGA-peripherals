@@ -1,7 +1,7 @@
 #-----------------------------------------------------
 #-- Project 1
 #-----------------------------------------------------
-NAME = rxleds
+NAME = examples/rxleds
 DEPS = uart_rx.v baudgen_rx.v
 
 #------------- Simulation of project 1 ---------
@@ -24,8 +24,8 @@ prog: $(NAME).bin
 #-----------------------------------------------------
 #-- Project 2
 #-----------------------------------------------------
-NAME2 = echo
-DEPS2 = uart_rx.v baudgen_rx.v ../uart-tx/baudgen_tx.v ../uart-tx/uart_tx.v
+NAME2 = examples/echo
+DEPS2 = uart_rx.v baudgen_rx.v ../../uart-tx/baudgen_tx.v ../../uart-tx/uart_tx.v
 
 #------------- Simulation---------
 sim2: $(NAME2)_tb.vcd
@@ -70,6 +70,6 @@ prog2: $(NAME2).bin
 
 #-- Clean the project
 clean:
-	rm -f *.bin *.txt *.blif *.out *.vcd *~ *~
+	rm -f examples/*.bin examples/*.txt examples/*.blif examples/*.out examples/*.vcd examples/*~
 
 .PHONY: all clean
