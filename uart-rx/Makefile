@@ -25,7 +25,7 @@ prog: $(NAME).bin
 #-- Project 2
 #-----------------------------------------------------
 NAME2 = examples/echo
-DEPS2 = uart_rx.v baudgen_rx.v ../../uart-tx/baudgen_tx.v ../../uart-tx/uart_tx.v
+DEPS2 = uart_rx.v baudgen_rx.v ../uart-tx/baudgen_tx.v ../uart-tx/uart_tx.v
 
 #------------- Simulation---------
 sim2: $(NAME2)_tb.vcd
