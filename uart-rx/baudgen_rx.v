@@ -42,7 +42,7 @@ module baudgen_rx #(
 localparam N = $clog2(BAUDRATE);
 
 //-- Value for generating the pulse in the middle of the period
-localparam M2 = (N >> 1);
+localparam M2 = (BAUDRATE >> 1);
 
 //-- Counter for implementing the divisor (it is a BAUDRATE module counter)
 //-- (when BAUDRATE is reached, it start again from 0)
