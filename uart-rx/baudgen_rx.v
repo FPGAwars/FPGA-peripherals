@@ -52,7 +52,7 @@ reg [N-1:0] divcounter = 0;
 always @(posedge clk)
 
   if (!rstn)
-    divcounter = 0;
+    divcounter <= 0;
 
   else if (clk_ena)
     //-- Normal working: counting. When the maximum count is reached, it starts from 0
