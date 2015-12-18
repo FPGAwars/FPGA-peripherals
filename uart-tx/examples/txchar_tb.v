@@ -18,7 +18,7 @@ module txchar_tb();
 localparam BAUDRATE = `B115200;
 
 //-- clock tics needed for sending one serial package
-localparam SERIAL_CAR = (BAUDRATE * 10);
+localparam SERIAL_CHAR = (BAUDRATE * 10);
 
 //-- System clock
 reg clk = 0;
@@ -54,7 +54,7 @@ initial begin
   #5 rstn <= 1;
 
   //-- Wait for 3 characters and finish
-  #(SERIAL_CAR * 3) $display("END of simulation");
+  #(SERIAL_CHAR * 3) $display("END of simulation");
   $finish;
 end
 
