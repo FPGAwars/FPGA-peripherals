@@ -1,62 +1,53 @@
 //----------------------------------------------------------------------------
-//-- Ejemplo de uso del receptor serie
-//-- Los caracteres recibidos se almacenan en un registro y los 4 bits menos
-//-- significativos se sacan por los leds rojos de la ICEstick 
+//-- rxleds: Uart-rx example 1
+//-- The 4-bits less significant of the character received are shown in the
+//-- red leds of the icestick board
 //----------------------------------------------------------------------------
-//-- (C) BQ. October 2015. Written by Juan Gonzalez (Obijuan)
+//-- (C) BQ. December 2015. Written by Juan Gonzalez (Obijuan)
 //-- GPL license
 //----------------------------------------------------------------------------
-//-- Comprobado su funcionamiento a todas las velocidades estandares:
-//-- 300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200
-//----------------------------------------------------------------------------
-
 `default_nettype none
-
 `include "baudgen.vh"
 
-//-- Top design
-module rxleds(input wire clk,         //-- Reloj del sistema
-              input wire rx,          //-- Linea de recepcion serie
-              output reg [3:0] leds,  //-- 4 leds rojos
-              output wire act);       //-- Led de actividad (verde)
+//-- Top entity
+module rxleds #(
+         parameter BAUDRATE = `B115200
+)(
+         input wire clk,         //-- System clock
+         input wire rx,          //-- Serial input
+         output reg [3:0] leds   //-- Red leds
+);
 
-//-- Parametro: Velocidad de transmision
-localparam BAUD = `B115200;
-
-//-- Señal de dato recibido
+//-- Received character signal
 wire rcv;
 
-//-- Datos recibidos
+//-- Received data
 wire [7:0] data;
 
-//-- Señal de reset
+//-- Reset signal
 reg rstn = 0;
 
-//-- Inicializador
+//-- Initialization
 always @(posedge clk)
   rstn <= 1;
 
-//-- Instanciar la unidad de recepcion
-uart_rx #(BAUD)
-  RX0 (.clk(clk),      //-- Reloj del sistema
-       .rstn(rstn),    //-- Señal de reset
-       .rx(rx),        //-- Linea de recepción de datos serie
-       .rcv(rcv),      //-- Señal de dato recibido
-       .data(data)     //-- Datos recibidos
+//-- Receiver unit instantation
+uart_rx #(BAUDRATE)
+  RX0 (.clk(clk),      //-- System clock
+       .rstn(rstn),    //-- Reset (Active low)
+       .rx(rx),        //-- Serial input
+       .rcv(rcv),      //-- Character received notification (1)
+       .data(data)     //-- Character received
       );
 
-//-- Sacar los 4 bits menos significativos del dato recibido por los leds
-//-- El dato se registra
+//-- Register the character received and show its 4 less significant leds
+//-- in the icestick leds
 always @(posedge clk)
-    //-- Capturar el dato cuando se reciba
-    if (rcv == 1'b1)
-      leds <= data[3:0]; 
+    if (!rstn)
+      leds <= 0;
 
-//-- Led de actividad
-//-- La linea de recepcion negada se saca por el led verde
-assign act = ~rx;
+    //-- When there is data available, capture it!
+    else if (rcv == 1'b1)
+      leds <= data[3:0];
 
 endmodule
-
-
-
