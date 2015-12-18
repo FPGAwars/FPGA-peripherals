@@ -1,64 +1,64 @@
 //----------------------------------------------------------------------------
-//-- Ejemplo de uso del receptor serie
-//-- Se hace eco de todos los caracteres recibidos. Ademas los 4 bits menos
-//-- significativos se sacan por los leds de la IceStick
+//-- echo.v: Uart-rx example 2
+//-- All the received characters are echoed
 //----------------------------------------------------------------------------
-//-- (C) BQ. October 2015. Written by Juan Gonzalez (Obijuan)
+//-- (C) BQ. December 2015. Written by Juan Gonzalez (Obijuan)
 //-- GPL license
 //----------------------------------------------------------------------------
-//-- Comprobado su funcionamiento a todas las velocidades estandares:
-//-- 300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200
-//----------------------------------------------------------------------------
-
 `default_nettype none
 
 `include "baudgen.vh"
 
 //-- Top design
-module echo(input wire clk,         //-- Reloj del sistema
-            input wire rx,          //-- Linea de recepcion serie
-            output wire tx,          //-- Linea de transmision serie
-            output wire [3:0] leds   //-- 4 leds rojos
-            );
+module echo #(
+         parameter BAUDRATE = `B115200
+)(
+         input wire clk,         //-- System clock
+         input wire rx,          //-- Serial input
+         output wire tx,          //-- Serial output
+         output reg [3:0] leds   //-- Red leds
+);
 
-//-- Parametro: Velocidad de transmision
-localparam BAUD = `B115200;
-
-//-- Señal de dato recibido
+//-- Received character signal
 wire rcv;
 
-//-- Datos recibidos
+//-- Received data
 wire [7:0] data;
 
-//-- Señal de reset
+//-- Reset signal
 reg rstn = 0;
 
-//-- Señal de transmisor listo
+//-- Transmitter ready signal
 wire ready;
 
-//-- Inicializador
+//-- Initialization
 always @(posedge clk)
   rstn <= 1;
 
-assign leds = data[3:0];
+//-- Turn on all the red leds
+//assign leds = 4'hF;
 
-//-- Instanciar la unidad de recepcion
-uart_rx #(BAUD)
-  RX0 (.clk(clk),      //-- Reloj del sistema
-       .rstn(rstn),    //-- Señal de reset
-       .rx(rx),        //-- Linea de recepción de datos serie
-       .rcv(rcv),      //-- Señal de dato recibido
-       .data(data)     //-- Datos recibidos
+//-- Show the 4 less significant bits in the leds
+always @(posedge clk)
+  leds = data[3:0];
+
+//-- Receiver unit instantation
+uart_rx #(.BAUDRATE(BAUDRATE))
+  RX0 (.clk(clk),
+       .rstn(rstn),
+       .rx(rx),
+       .rcv(rcv),
+       .data(data)
       );
 
-//-- Instanciar la unidad de transmision
-uart_tx #(BAUD)
-  TX0 ( .clk(clk),        //-- Reloj del sistema
-         .rstn(rstn),     //-- Reset global (activo nivel bajo)
-         .start(rcv),     //-- Comienzo de transmision
-         .data(data),     //-- Dato a transmitir
-         .tx(tx),         //-- Salida de datos serie (hacia el PC)
-         .ready(ready)    //-- Transmisor listo / ocupado
+//-- Transmitter unit instantation
+uart_tx #(.BAUDRATE(BAUDRATE))
+  TX0 ( .clk(clk),
+         .rstn(rstn),
+         .start(rcv),
+         .data(data),
+         .tx(tx),
+         .ready(ready)
        );
 
 

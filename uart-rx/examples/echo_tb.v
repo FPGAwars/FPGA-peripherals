@@ -1,83 +1,82 @@
 //-------------------------------------------------------------------
-//-- Banco de pruebas para probar el receptor de la UART
-//-- Se envían los bits en serie
+//-- echo_tb.v
+//-- Testbench for the simulation of the echo.v
 //-------------------------------------------------------------------
-//-- BQ October 2015. Written by Juan Gonzalez (Obijuan)
+//-- (c) BQ December 2015. Written by Juan Gonzalez (Obijuan)
 //-------------------------------------------------------------------
 //-- GPL License
 //-------------------------------------------------------------------
+`timescale 100 ns / 10 ns
+
 `include "baudgen.vh"
 
 
 module echo_tb();
 
-localparam BAUD = `B115200;
+//-- Baudrate for the simulation
+localparam BAUDRATE = `B115200;
 
-//-- Tics de reloj para envio de datos a esa velocidad
-//-- Se multiplica por 2 porque el periodo del reloj es de 2 unidades
-localparam BITRATE = (BAUD << 1);
+//-- clock tics needed for sending one serial package
+localparam SERIAL_PACK = (BAUDRATE * 10);
 
-//-- Tics necesarios para enviar una trama serie completa, mas un bit adicional
-localparam FRAME = (BITRATE * 10);
-
-//-- Tiempo entre dos bits enviados
-localparam FRAME_WAIT = (BITRATE * 4);
-
+//-- Time between two characters
+localparam WAIT = (BAUDRATE * 4);
 
 //----------------------------------------
-//-- Tarea para enviar caracteres serie
+//-- Task for sending a character in serial
 //----------------------------------------
-  task send_car;
-    input [7:0] car;
+  task send_char;
+    input [7:0] char;
   begin
-    rx <= 0;                 //-- Bit start
-    #BITRATE rx <= car[0];   //-- Bit 0
-    #BITRATE rx <= car[1];   //-- Bit 1
-    #BITRATE rx <= car[2];   //-- Bit 2
-    #BITRATE rx <= car[3];   //-- Bit 3
-    #BITRATE rx <= car[4];   //-- Bit 4
-    #BITRATE rx <= car[5];   //-- Bit 5
-    #BITRATE rx <= car[6];   //-- Bit 6
-    #BITRATE rx <= car[7];   //-- Bit 7
-    #BITRATE rx <= 1;        //-- Bit stop
-    #BITRATE rx <= 1;        //-- Esperar a que se envie bit de stop
+    rx <= 0;                   //-- Send the Start bit
+    #BAUDRATE rx <= char[0];   //-- Bit 0
+    #BAUDRATE rx <= char[1];   //-- Bit 1
+    #BAUDRATE rx <= char[2];   //-- Bit 2
+    #BAUDRATE rx <= char[3];   //-- Bit 3
+    #BAUDRATE rx <= char[4];   //-- Bit 4
+    #BAUDRATE rx <= char[5];   //-- Bit 5
+    #BAUDRATE rx <= char[6];   //-- Bit 6
+    #BAUDRATE rx <= char[7];   //-- Bit 7
+    #BAUDRATE rx <= 1;         //-- stop bit
+    #BAUDRATE rx <= 1;         //-- Wait until the bits stop is sent
   end
   endtask
 
-
-//-- Registro para generar la señal de reloj
+//-- System clock
 reg clk = 0;
 
-
-//-- Cables para las pruebas
+//-- Wire connected to the rx port for transmiting to the receiver
 reg rx = 1;
+
+//-- Wire connected to tx for receiving the echo
 wire tx;
 
-//-- Instanciar el modulo rxleds
-echo #(BAUD)
+//-- For connecting the leds
+wire [3:0] leds;
+
+//-- Instantiate the entity to test
+echo #(.BAUDRATE(BAUDRATE))
   dut(
     .clk(clk),
     .rx(rx),
     .tx(tx)
   );
 
-//-- Generador de reloj. Periodo 2 unidades
+//-- Clock generator
 always
-  # 1 clk <= ~clk;
+  # 0.5 clk <= ~clk;
 
-
-//-- Proceso al inicio
 initial begin
 
-  //-- Fichero donde almacenar los resultados
+  //-- File where to store the simulation
   $dumpfile("examples/echo_tb.vcd");
   $dumpvars(0, echo_tb);
 
-  //-- Enviar datos de prueba
-  #BITRATE      send_car(8'h55);
-  #(FRAME_WAIT*3) send_car("K");
+  //-- Sent some data
+  #BAUDRATE    send_char(8'h55);
+  #WAIT        send_char("K");
 
-  #(FRAME_WAIT*4) $display("End of simultation");
+  #(WAIT * 4) $display("END of the simulation");
   $finish;
 end
 
