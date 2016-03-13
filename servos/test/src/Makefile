@@ -1,18 +1,16 @@
 #----------------------------------------
 #-- Establecer nombre del componente
 #----------------------------------------
-
-#-- Escribir aqui el nombre del modulo principal a compilar
 NAME = test
-DEPS =
+DEPS = ServoUnit.v
 
-NAME2 = divM
-DEPS =
+NAME2 = scicad2
+DEPS2 = uart_tx.v baudgen.v dividerp1.v
 
 #-------------------------------------------------------
 #-- Objetivo por defecto: hacer simulacion y sintesis
 #-------------------------------------------------------
-all: sim sint sim2 sint2
+all: sim sint
 
 #----------------------------------------------
 #-- make sim
@@ -48,7 +46,7 @@ $(NAME)_tb.vcd: $(NAME).v $(DEPS) $(NAME)_tb.v
 #------------------------------
 #-- Sintesis completa
 #------------------------------
-$(NAME).bin: $(NAME).pcf $(NAME).v
+$(NAME).bin: $(NAME).pcf $(NAME).v $(DEPS)
 
 	#-- Sintesis
 	yosys -p "synth_ice40 -blif $(NAME).blif" $(NAME).v $(DEPS)
@@ -60,12 +58,7 @@ $(NAME).bin: $(NAME).pcf $(NAME).v
 	icepack $(NAME).txt $(NAME).bin
 
 
-#----------------------------------------------
-#-- make sim
-#----------------------------------------------
-#-- Objetivo para hacer la simulacion del
-#-- banco de pruebas
-#----------------------------------------------
+
 sim2: $(NAME2)_tb.vcd
 
 #-----------------------------------------------
@@ -94,7 +87,7 @@ $(NAME2)_tb.vcd: $(NAME2).v $(DEPS2) $(NAME2)_tb.v
 #------------------------------
 #-- Sintesis completa
 #------------------------------
-$(NAME2).bin: $(NAME2).pcf $(NAME2).v
+$(NAME2).bin: $(NAME2).pcf $(NAME2).v $(DEPS2)
 
 	#-- Sintesis
 	yosys -p "synth_ice40 -blif $(NAME2).blif" $(NAME2).v $(DEPS2)
@@ -104,6 +97,7 @@ $(NAME2).bin: $(NAME2).pcf $(NAME2).v
 
 	#-- Generar binario final, listo para descargar en fgpa
 	icepack $(NAME2).txt $(NAME2).bin
+
 
 
 #-- Limpiar todo
