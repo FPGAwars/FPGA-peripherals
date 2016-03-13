@@ -1,0 +1,28 @@
+[*]
+[*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
+[*] Sun Mar 13 18:09:07 2016
+[*]
+[dumpfile] "/home/obijuan/develop/FPGA-peripherals/servos/test/src/test_tb.vcd"
+[dumpfile_mtime] "Sun Mar 13 18:08:23 2016"
+[dumpfile_size] 22352915
+[savefile] "/home/obijuan/develop/FPGA-peripherals/servos/test/src/test_tb.gtkw"
+[timestart] 0
+[size] 1592 600
+[pos] -1 -1
+*-32.229546 21220000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] test_tb.
+[sst_width] 223
+[signals_width] 198
+[sst_expanded] 1
+[sst_vpaned_height] 160
+@28
+test_tb.dut.clk
+@24
+test_tb.dut.divcounter[5:0]
+@28
+test_tb.dut.led0
+test_tb.dut.tic
+@29
+test_tb.dut.clk_out
+[pattern_trace] 1
+[pattern_trace] 0
