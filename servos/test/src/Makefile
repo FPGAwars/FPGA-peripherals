@@ -2,7 +2,7 @@
 #-- Establecer nombre del componente
 #----------------------------------------
 NAME = test
-DEPS = ServoUnit.v
+DEPS = ServoUnit.v dividerp1.v
 
 NAME2 = scicad2
 DEPS2 = uart_tx.v baudgen.v dividerp1.v
