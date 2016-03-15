@@ -1,0 +1,5 @@
+set_io s0 144
+set_io s1 143
+
+set_io led0 95
+set_io clk  21
