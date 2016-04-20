@@ -5,10 +5,19 @@ an **Icestick FPGA board**, using the open-source toolchain from the
 
 # Documentation
 
-[Access to the github wiki](https://github.com/Obijuan/FPGA-peripherals/wiki)
+[Access to the github wiki](https://github.com/FPGAwars/FPGA-peripherals/wiki)
+
+# Author
+
+* Juan González-Gómez (Obijuan)
 
 # License
 
-![](https://github.com/Obijuan/FPGA-peripherals/raw/master/images/bq-logo-cc-sa-small-150px.png)
-
 Licensed under a  [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/)
+
+# Credits
+ 
+ ![](https://github.com/FPGAwars/FPGA-peripherals/raw/master/images/bq-logo-cc-sa-small-150px.png)
+ 
+ This work was sponsored by BQ from 2015-07-1 to 2016-04-14.  Thanks!
+ 
