@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------
-//-- rxleds_tb.v
-//-- Testbench for the simulation of the rxleds.v
+//-- echo_tb.v
+//-- Testbench for the simulation of the echo.v
 //-------------------------------------------------------------------
 //-- (c) BQ December 2015. Written by Juan Gonzalez (Obijuan)
 //-------------------------------------------------------------------
@@ -11,7 +11,7 @@
 `include "baudgen.vh"
 
 
-module rxleds_tb();
+module echo_tb();
 
 //-- Baudrate for the simulation
 localparam BAUDRATE = `B115200;
@@ -48,15 +48,18 @@ reg clk = 0;
 //-- Wire connected to the rx port for transmiting to the receiver
 reg rx = 1;
 
+//-- Wire connected to tx for receiving the echo
+wire tx;
+
 //-- For connecting the leds
 wire [3:0] leds;
 
 //-- Instantiate the entity to test
-rxleds #(.BAUDRATE(BAUDRATE))
+echo #(.BAUDRATE(BAUDRATE))
   dut(
     .clk(clk),
     .rx(rx),
-    .leds(leds)
+    .tx(tx)
   );
 
 //-- Clock generator
@@ -66,8 +69,8 @@ always
 initial begin
 
   //-- File where to store the simulation
-  $dumpfile("examples/rxleds_tb.vcd");
-  $dumpvars(0, rxleds_tb);
+  $dumpfile("echo_tb.vcd");
+  $dumpvars(0, echo_tb);
 
   //-- Sent some data
   #BAUDRATE    send_char(8'h55);
