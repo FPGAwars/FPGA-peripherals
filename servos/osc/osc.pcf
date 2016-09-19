@@ -1,0 +1,3 @@
+set_io clk_out 144
+set_io led0 95
+set_io clk  21

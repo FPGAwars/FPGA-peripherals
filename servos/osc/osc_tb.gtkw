@@ -1,0 +1,22 @@
+[*]
+[*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
+[*] Mon Sep 19 14:55:39 2016
+[*]
+[dumpfile] "/home/jesus/code/FPGA-peripherals/servos/osc/osc_tb.vcd"
+[dumpfile_mtime] "Mon Sep 19 14:55:18 2016"
+[dumpfile_size] 30341780
+[savefile] "/home/jesus/code/FPGA-peripherals/servos/osc/osc_tb.gtkw"
+[timestart] 0
+[size] 1592 600
+[pos] 0 39
+*-33.229546 16042836675 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 223
+[signals_width] 198
+[sst_expanded] 1
+[sst_vpaned_height] 160
+@28
+osc_tb.clk
+@29
+osc_tb.clk_out
+[pattern_trace] 1
+[pattern_trace] 0
