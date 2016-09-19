@@ -1,6 +1,6 @@
-# Servos
+# UART-TX
 
-Verilog PWM implementation. Using [Icezum](https://github.com/FPGAwars/icezum) board.
+Verilog UART TX implementation. Using [Icezum](https://github.com/FPGAwars/icezum) board.
 
 ## Execute
 
@@ -8,10 +8,8 @@ Install [apio](https://github.com/FPGAwars/apio#installation).
 
 Go to directory:
 
-* osc
-* PP
-* test
-
+* examples/txchar
+* examples/txstr
 
 | Action       | Command       |
 |--------------|---------------|

@@ -47,7 +47,7 @@ always
 initial begin
 
   //-- File where to store the simulation
-  $dumpfile("examples/txstr_tb.vcd");
+  $dumpfile("txstr_tb.vcd");
   $dumpvars(0, txstr_tb);
 
   //-- Activate reset
