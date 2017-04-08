@@ -90,7 +90,7 @@
           "id": "badfde2e-26fb-45e9-9c13-c5eef3b01b34",
           "type": "24ba1e847f81979d41138911c2e239b86f4b4194",
           "position": {
-            "x": 696,
+            "x": 720,
             "y": -176
           },
           "size": {
@@ -227,6 +227,25 @@
             "x": 608,
             "y": 216
           }
+        },
+        {
+          "id": "4fd32321-063f-4246-bdee-a7ee762aa55c",
+          "type": "basic.output",
+          "data": {
+            "name": "trigg2",
+            "pins": [
+              {
+                "index": "0",
+                "name": "D10",
+                "value": "141"
+              }
+            ],
+            "virtual": false
+          },
+          "position": {
+            "x": 144,
+            "y": 224
+          }
         }
       ],
       "wires": [
@@ -304,7 +323,13 @@
           "target": {
             "block": "badfde2e-26fb-45e9-9c13-c5eef3b01b34",
             "port": "a50c9e97-d59b-40ef-9a57-09be4e6167e5"
-          }
+          },
+          "vertices": [
+            {
+              "x": 656,
+              "y": -128
+            }
+          ]
         },
         {
           "source": {
@@ -361,6 +386,22 @@
             {
               "x": 600,
               "y": 120
+            }
+          ]
+        },
+        {
+          "source": {
+            "block": "59f21369-6fad-428d-9a8e-c1d536c154ad",
+            "port": "out"
+          },
+          "target": {
+            "block": "4fd32321-063f-4246-bdee-a7ee762aa55c",
+            "port": "in"
+          },
+          "vertices": [
+            {
+              "x": 24,
+              "y": 112
             }
           ]
         }
