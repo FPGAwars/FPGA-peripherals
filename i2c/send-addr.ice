@@ -34,7 +34,7 @@
           "id": "245dbd89-9788-4155-9844-4da7ce3d2d37",
           "type": "basic.code",
           "data": {
-            "code": "localparam IDLE = 0;\nlocalparam START = 1;\n\nreg state = IDLE;\nreg next_state = IDLE;\n\nreg oe;\nreg ena;\n\n//-- Transitions between states\nalways @(posedge clk)\n  state <= next_state;\n  \nalways @(*) begin\n\n  //-- Default values\n  next_state = state;\n  oe = 0;\n  ena = 0;\n  \n  case (state)\n    IDLE: begin\n      if (button)\n        next_state = START;\n    end\n    \n    START: begin\n      oe = 1;  //-- Config. SDA for output\n      ena = 1; //-- Start the clock\n    end\n    \n  endcase\n  \nend",
+            "code": "localparam IDLE = 0;\nlocalparam START = 1;\n\nreg state = IDLE;\nreg next_state = IDLE;\n\nreg oe;\nreg ena;\nreg trig = 0;\n\n//-- Transitions between states\nalways @(posedge clk)\n  state <= next_state;\n  \nalways @(*) begin\n\n  //-- Default values\n  next_state = state;\n  oe = 0;\n  ena = 0;\n  trig = 0;\n  \n  case (state)\n    IDLE: begin\n      if (button)\n        next_state = START;\n    end\n    \n    START: begin\n      oe = 1;  //-- Config. SDA for output\n      ena = 1; //-- Start the clock\n      trig = 1;\n    end\n    \n  endcase\n  \nend",
             "params": [],
             "ports": {
               "in": [
@@ -51,6 +51,9 @@
                 },
                 {
                   "name": "oe"
+                },
+                {
+                  "name": "trig"
                 }
               ]
             }
@@ -61,7 +64,7 @@
           },
           "size": {
             "width": 368,
-            "height": 240
+            "height": 256
           }
         },
         {
@@ -128,18 +131,6 @@
           }
         },
         {
-          "id": "6c283eb0-fa75-484c-9dc3-8e7fad8e3c0e",
-          "type": "a627f5aacef2457b46054b0e895bd70d62c19a0c",
-          "position": {
-            "x": 48,
-            "y": -40
-          },
-          "size": {
-            "width": 96,
-            "height": 64
-          }
-        },
-        {
           "id": "0002b440-f081-44a9-b2b4-804ae603c9d5",
           "type": "basic.output",
           "data": {
@@ -159,6 +150,18 @@
           }
         },
         {
+          "id": "6c283eb0-fa75-484c-9dc3-8e7fad8e3c0e",
+          "type": "a627f5aacef2457b46054b0e895bd70d62c19a0c",
+          "position": {
+            "x": 48,
+            "y": -32
+          },
+          "size": {
+            "width": 96,
+            "height": 64
+          }
+        },
+        {
           "id": "59f21369-6fad-428d-9a8e-c1d536c154ad",
           "type": "basic.input",
           "data": {
@@ -175,7 +178,7 @@
           },
           "position": {
             "x": -112,
-            "y": -24
+            "y": -16
           }
         },
         {
@@ -204,6 +207,25 @@
           "size": {
             "width": 432,
             "height": 320
+          }
+        },
+        {
+          "id": "f3dd4e30-d0b8-4587-967c-9e72fa8b8c33",
+          "type": "basic.output",
+          "data": {
+            "name": "trig",
+            "pins": [
+              {
+                "index": "0",
+                "name": "D11",
+                "value": "142"
+              }
+            ],
+            "virtual": false
+          },
+          "position": {
+            "x": 608,
+            "y": 216
           }
         }
       ],
@@ -323,6 +345,22 @@
             {
               "x": 752,
               "y": 24
+            }
+          ]
+        },
+        {
+          "source": {
+            "block": "245dbd89-9788-4155-9844-4da7ce3d2d37",
+            "port": "trig"
+          },
+          "target": {
+            "block": "f3dd4e30-d0b8-4587-967c-9e72fa8b8c33",
+            "port": "in"
+          },
+          "vertices": [
+            {
+              "x": 600,
+              "y": 120
             }
           ]
         }
