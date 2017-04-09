@@ -31,6 +31,18 @@
           }
         },
         {
+          "id": "b52a13bf-4128-4215-b03d-144252e23fee",
+          "type": "faccf20a16b576e0ba31a48f4c485c57ac98a97e",
+          "position": {
+            "x": 416,
+            "y": -232
+          },
+          "size": {
+            "width": 96,
+            "height": 64
+          }
+        },
+        {
           "id": "245dbd89-9788-4155-9844-4da7ce3d2d37",
           "type": "basic.code",
           "data": {
@@ -65,18 +77,6 @@
           "size": {
             "width": 368,
             "height": 288
-          }
-        },
-        {
-          "id": "badfde2e-26fb-45e9-9c13-c5eef3b01b34",
-          "type": "24ba1e847f81979d41138911c2e239b86f4b4194",
-          "position": {
-            "x": 368,
-            "y": -216
-          },
-          "size": {
-            "width": 96,
-            "height": 64
           }
         },
         {
@@ -204,7 +204,7 @@
           "id": "b783ae56-dc89-4640-8df7-808d48c9a41d",
           "type": "basic.code",
           "data": {
-            "code": "\n//-- Initial value of the register\n//-- I2C frame: start (1bit) + addr (7bits) \n// + 1 (read) + 1 (idle ack)\n// + 8 (reg)\n//                    s       r        k          wp\n//                    .aaaaaaa.rrrrrrrr....aaaaaaa..\n//reg [59:0] data =   60'b0011111100000000000000000000000001100110011111111000000001111;\n//reg [59:0] data2  = 60'b0101010101010101010101010101010101010101010101010101010101010;\n\n//                      ss              WWAA                AA                SS\n//                      ..A6A5A4A3A2A1A0    R7R6R5R4R3R2R1R0  C7C6C5C4C3C2C1C0   \nreg [55:0] data =   56'b00111111000000000011000000000000000011001100110000000011;\nreg [55:0] data2  = 56'b01010101010101010101010101010101010101010101010101010111;\n\n//-- Shift register\nalways @(posedge clk)\n  data <= {data[54:0], 1'b1};\n  \n//-- Shift register\nalways @(posedge clk)\n  data2  <= {data2[54:0], 1'b1};\n  \n//-- Send the MSB  \nassign ser = data[55];\nassign ser2 = data2[55];",
+            "code": "\n//-- Initial value of the register\n//-- I2C frame: start (1bit) + addr (7bits) \n// + 1 (read) + 1 (idle ack)\n// + 8 (reg)\n// Write                  \n//                      ss              WWAA                AA                AA                AA \n//                      ..A6A5A4A3A2A1A0....R7R6R5R4R3R2R1R0..C7C6C5C4C3C2C1C0..SSSS\n//reg [59:0] data =   60'b001111110000000000110000000000000000110011001100000000110011;\n//reg [59:0] data2  = 60'b110101010101010101010101010101010101010101010101010101010111;\n\n//READ                                                         40\n//                       ss              WWAA                AATTss              RRAA                        NACK \n//                      ..A6A5A4A3A2A1A0    R7R6R5R4R3R2R1R0      A6A5A4A3A2A1A0    TTTTTTTTI7I6I5I4I3I2I1I0    SS\nreg [89:0] data   = 90'b001111110000000000110000000000000011111100111111000000001111111111110000000000000000111001;\nreg [89:0] data2  = 90'b100101010101010101010101010101010101011110010101010101010101000000000101010101010101010011;\n\n//-- Shift register\nalways @(posedge clk)\n  data <= {data[87:0], 1'b1};\n  \n//-- Shift register\nalways @(posedge clk)\n  data2  <= {data2[87:0], 1'b1};\n  \n//-- Send the MSB  \nassign ser = data[88];\nassign ser2 = data2[88];",
             "params": [],
             "ports": {
               "in": [
@@ -321,43 +321,6 @@
         },
         {
           "source": {
-            "block": "245dbd89-9788-4155-9844-4da7ce3d2d37",
-            "port": "ena"
-          },
-          "target": {
-            "block": "badfde2e-26fb-45e9-9c13-c5eef3b01b34",
-            "port": "a50c9e97-d59b-40ef-9a57-09be4e6167e5"
-          },
-          "vertices": []
-        },
-        {
-          "source": {
-            "block": "badfde2e-26fb-45e9-9c13-c5eef3b01b34",
-            "port": "b8446f54-55e6-4536-9530-e40e51ff1309"
-          },
-          "target": {
-            "block": "4130b88b-ef37-4983-9b58-c8228676da65",
-            "port": "in"
-          }
-        },
-        {
-          "source": {
-            "block": "badfde2e-26fb-45e9-9c13-c5eef3b01b34",
-            "port": "4e0ebe13-d614-4858-8781-8a0e8a34c6d3"
-          },
-          "target": {
-            "block": "b783ae56-dc89-4640-8df7-808d48c9a41d",
-            "port": "clk"
-          },
-          "vertices": [
-            {
-              "x": 384,
-              "y": 24
-            }
-          ]
-        },
-        {
-          "source": {
             "block": "59f21369-6fad-428d-9a8e-c1d536c154ad",
             "port": "out"
           },
@@ -391,50 +354,64 @@
             "block": "99d51906-ebef-4819-83d5-65f0f82b5a31",
             "port": "in"
           }
+        },
+        {
+          "source": {
+            "block": "245dbd89-9788-4155-9844-4da7ce3d2d37",
+            "port": "ena"
+          },
+          "target": {
+            "block": "b52a13bf-4128-4215-b03d-144252e23fee",
+            "port": "e504d78a-6567-49ef-a8fb-e985194f8be0"
+          }
+        },
+        {
+          "source": {
+            "block": "b52a13bf-4128-4215-b03d-144252e23fee",
+            "port": "4c05e794-1235-4f95-964b-8cc2b2f3e784"
+          },
+          "target": {
+            "block": "b783ae56-dc89-4640-8df7-808d48c9a41d",
+            "port": "clk"
+          }
+        },
+        {
+          "source": {
+            "block": "b52a13bf-4128-4215-b03d-144252e23fee",
+            "port": "aa8d5867-4cc8-4528-bd1d-1a9db8c5f61f"
+          },
+          "target": {
+            "block": "4130b88b-ef37-4983-9b58-c8228676da65",
+            "port": "in"
+          }
         }
       ]
     },
     "state": {
       "pan": {
-        "x": 440.0501,
-        "y": 374.8603
+        "x": -485.3918,
+        "y": -101.1962
       },
-      "zoom": 1.2353
+      "zoom": 1.5259
     }
   },
   "dependencies": {
-    "24ba1e847f81979d41138911c2e239b86f4b4194": {
+    "faccf20a16b576e0ba31a48f4c485c57ac98a97e": {
       "package": {
-        "name": "100Khz",
-        "version": "0.0.1",
-        "description": "A 90-deg out-of-phasel 100Khz squared signal generator, with enable",
-        "author": "Juan Gonzalez-Gomez (Obijuan)",
+        "name": "",
+        "version": "",
+        "description": "",
+        "author": "",
         "image": ""
       },
       "design": {
         "graph": {
           "blocks": [
             {
-              "id": "84c47899-ebfa-4bc4-8e3a-30c8df327608",
-              "type": "basic.info",
-              "data": {
-                "info": "clk_90 (SCL)",
-                "readonly": false
-              },
-              "position": {
-                "x": 848,
-                "y": -96
-              },
-              "size": {
-                "width": 160,
-                "height": 48
-              }
-            },
-            {
-              "id": "009769e9-f0b2-4ef0-9d6a-88c0d2c01d60",
+              "id": "2b2e5d93-e6b6-469e-b347-769b365ca08a",
               "type": "basic.code",
               "data": {
-                "code": "//-- Divide the frequency by 60 (12Mhz / 60 = 200Khz)\nlocalparam M = 60;\n\n//-- Calculate the number of bits for the divider\nlocalparam N = $clog2(M);\n\n//-- Registro for the implementation of the Module M counter\nreg [N-1:0] divcounter = 0;\n\n//-- Module M counter\nalways @(posedge clk)\n  if (ena)\n      divcounter <= (divcounter == M - 1) ? 0 : divcounter + 1;\n  else\n     divcounter <= 1'b0;\n\n//-- Comparator. A 200Khz signal si generated\n//-- The two signals are 90 degrees out of phase\nwire s90;\nwire s;\nassign s90 = (divcounter == M - 1) ? 1 : 0;\nassign s = (divcounter == M/2) ? 1 : 0;\n",
+                "code": "//-- Divide the frequency by 30 (12Mhz / 30 = 400Khz)\nlocalparam M = 30;\n\n//-- Calculate the number of bits for the divider\nlocalparam N = $clog2(M);\n\n//-- Registro for the implementation of the Module M counter\nreg [N-1:0] divcounter = 0;\n\n//-- Module M counter\nalways @(posedge clk)\n  if (ena)\n      divcounter <= (divcounter == M - 1) ? 0 : divcounter + 1;\n  else\n     divcounter <= 1'b0;\n\n//-- Comparator. A 200Khz signal si generated\n//-- The two signals are 90 degrees out of phase\nwire s90;\nwire s;\nassign s90 = (divcounter == M - 1) ? 1 : 0;\nassign s = (divcounter == M/2) ? 1 : 0;\n",
                 "params": [],
                 "ports": {
                   "in": [
@@ -456,19 +433,19 @@
                 }
               },
               "position": {
-                "x": -264,
-                "y": -32
+                "x": -312,
+                "y": -304
               },
               "size": {
                 "width": 624,
-                "height": 384
+                "height": 592
               }
             },
             {
-              "id": "a308e0b3-4f5d-4524-bfda-e0a11fa0fb22",
+              "id": "b02bb5e9-3a7d-40c4-8498-a363919deedd",
               "type": "basic.code",
               "data": {
-                "code": "\nreg q = 1;\n\nalways @(posedge clk)\n  if (ena) begin\n    if (t)\n      q <= ~q;\n    end\n  else\n    q <= 1;\n \n  \n  ",
+                "code": "\nreg q = 1;\n\nalways @(posedge clk)\n  if (ena) begin\n    if (t)\n      q <= ~q;\n    end\n  else\n    q <= 1;\n ",
                 "params": [],
                 "ports": {
                   "in": [
@@ -490,70 +467,42 @@
                 }
               },
               "position": {
-                "x": 568,
-                "y": -24
+                "x": 544,
+                "y": -264
               },
               "size": {
                 "width": 304,
-                "height": 176
+                "height": 224
               }
             },
             {
-              "id": "000e1ce6-3bd1-4a3f-99be-848b6cbe262f",
+              "id": "ef64e9cf-8141-4781-be88-0ef993d09d0d",
               "type": "basic.input",
               "data": {
                 "name": "clk",
                 "clock": true
               },
               "position": {
-                "x": -440,
-                "y": 32
+                "x": -656,
+                "y": -184
               }
             },
             {
-              "id": "b8446f54-55e6-4536-9530-e40e51ff1309",
+              "id": "aa8d5867-4cc8-4528-bd1d-1a9db8c5f61f",
               "type": "basic.output",
               "data": {
                 "name": "s1"
               },
               "position": {
-                "x": 984,
-                "y": 32
+                "x": 920,
+                "y": -184
               }
             },
             {
-              "id": "a50c9e97-d59b-40ef-9a57-09be4e6167e5",
-              "type": "basic.input",
-              "data": {
-                "name": "ena",
-                "clock": false
-              },
-              "position": {
-                "x": -440,
-                "y": 224
-              }
-            },
-            {
-              "id": "7d3fe940-b7fc-4042-a957-34f50e7d878e",
-              "type": "basic.info",
-              "data": {
-                "info": "clk (for SDA)",
-                "readonly": false
-              },
-              "position": {
-                "x": 872,
-                "y": 248
-              },
-              "size": {
-                "width": 160,
-                "height": 48
-              }
-            },
-            {
-              "id": "aef4a07f-f052-4461-b5a2-68d94d90f58e",
+              "id": "839fbc76-8009-4291-8014-e8e9d8dbbf46",
               "type": "basic.code",
               "data": {
-                "code": "\nreg q = 1;\n\nalways @(posedge clk)\n  if (ena) begin\n    if (t)\n      q <= ~q;\n    end\n  else\n    q <= 1;\n \n  \n  ",
+                "code": "\nreg q = 1;\n\nalways @(posedge clk)\n  if (ena) begin\n    if (t)\n      q <= ~q;\n    end\n  else\n    q <= 1;\n ",
                 "params": [],
                 "ports": {
                   "in": [
@@ -575,166 +524,176 @@
                 }
               },
               "position": {
-                "x": 568,
-                "y": 312
+                "x": 544,
+                "y": 72
               },
               "size": {
                 "width": 304,
-                "height": 176
+                "height": 224
               }
             },
             {
-              "id": "4e0ebe13-d614-4858-8781-8a0e8a34c6d3",
+              "id": "e504d78a-6567-49ef-a8fb-e985194f8be0",
+              "type": "basic.input",
+              "data": {
+                "name": "ena",
+                "clock": false
+              },
+              "position": {
+                "x": -664,
+                "y": 112
+              }
+            },
+            {
+              "id": "4c05e794-1235-4f95-964b-8cc2b2f3e784",
               "type": "basic.output",
               "data": {
                 "name": "s2"
               },
               "position": {
-                "x": 992,
-                "y": 368
+                "x": 944,
+                "y": 152
               }
             }
           ],
           "wires": [
             {
               "source": {
-                "block": "aef4a07f-f052-4461-b5a2-68d94d90f58e",
-                "port": "q"
-              },
-              "target": {
-                "block": "4e0ebe13-d614-4858-8781-8a0e8a34c6d3",
-                "port": "in"
-              }
-            },
-            {
-              "source": {
-                "block": "a308e0b3-4f5d-4524-bfda-e0a11fa0fb22",
-                "port": "q"
-              },
-              "target": {
-                "block": "b8446f54-55e6-4536-9530-e40e51ff1309",
-                "port": "in"
-              }
-            },
-            {
-              "source": {
-                "block": "000e1ce6-3bd1-4a3f-99be-848b6cbe262f",
+                "block": "ef64e9cf-8141-4781-be88-0ef993d09d0d",
                 "port": "out"
               },
               "target": {
-                "block": "009769e9-f0b2-4ef0-9d6a-88c0d2c01d60",
+                "block": "2b2e5d93-e6b6-469e-b347-769b365ca08a",
                 "port": "clk"
               }
             },
             {
               "source": {
-                "block": "a50c9e97-d59b-40ef-9a57-09be4e6167e5",
+                "block": "e504d78a-6567-49ef-a8fb-e985194f8be0",
                 "port": "out"
               },
               "target": {
-                "block": "009769e9-f0b2-4ef0-9d6a-88c0d2c01d60",
+                "block": "2b2e5d93-e6b6-469e-b347-769b365ca08a",
                 "port": "ena"
               }
             },
             {
               "source": {
-                "block": "a50c9e97-d59b-40ef-9a57-09be4e6167e5",
-                "port": "out"
+                "block": "b02bb5e9-3a7d-40c4-8498-a363919deedd",
+                "port": "q"
               },
               "target": {
-                "block": "aef4a07f-f052-4461-b5a2-68d94d90f58e",
-                "port": "ena"
-              },
-              "vertices": [
-                {
-                  "x": -296,
-                  "y": 296
-                }
-              ]
+                "block": "aa8d5867-4cc8-4528-bd1d-1a9db8c5f61f",
+                "port": "in"
+              }
             },
             {
               "source": {
-                "block": "a50c9e97-d59b-40ef-9a57-09be4e6167e5",
-                "port": "out"
-              },
-              "target": {
-                "block": "a308e0b3-4f5d-4524-bfda-e0a11fa0fb22",
-                "port": "ena"
-              },
-              "vertices": [
-                {
-                  "x": -296,
-                  "y": 456
-                },
-                {
-                  "x": 488,
-                  "y": 176
-                }
-              ]
-            },
-            {
-              "source": {
-                "block": "009769e9-f0b2-4ef0-9d6a-88c0d2c01d60",
+                "block": "2b2e5d93-e6b6-469e-b347-769b365ca08a",
                 "port": "s90"
               },
               "target": {
-                "block": "a308e0b3-4f5d-4524-bfda-e0a11fa0fb22",
+                "block": "b02bb5e9-3a7d-40c4-8498-a363919deedd",
                 "port": "t"
               }
             },
             {
               "source": {
-                "block": "009769e9-f0b2-4ef0-9d6a-88c0d2c01d60",
+                "block": "ef64e9cf-8141-4781-be88-0ef993d09d0d",
+                "port": "out"
+              },
+              "target": {
+                "block": "b02bb5e9-3a7d-40c4-8498-a363919deedd",
+                "port": "clk"
+              },
+              "vertices": [
+                {
+                  "x": -448,
+                  "y": -240
+                },
+                {
+                  "x": -368,
+                  "y": -352
+                }
+              ]
+            },
+            {
+              "source": {
+                "block": "839fbc76-8009-4291-8014-e8e9d8dbbf46",
+                "port": "q"
+              },
+              "target": {
+                "block": "4c05e794-1235-4f95-964b-8cc2b2f3e784",
+                "port": "in"
+              }
+            },
+            {
+              "source": {
+                "block": "2b2e5d93-e6b6-469e-b347-769b365ca08a",
                 "port": "s"
               },
               "target": {
-                "block": "aef4a07f-f052-4461-b5a2-68d94d90f58e",
+                "block": "839fbc76-8009-4291-8014-e8e9d8dbbf46",
                 "port": "t"
+              }
+            },
+            {
+              "source": {
+                "block": "ef64e9cf-8141-4781-be88-0ef993d09d0d",
+                "port": "out"
+              },
+              "target": {
+                "block": "839fbc76-8009-4291-8014-e8e9d8dbbf46",
+                "port": "clk"
               },
               "vertices": [
+                {
+                  "x": -448,
+                  "y": -352
+                },
                 {
                   "x": 424,
-                  "y": 312
+                  "y": -16
                 }
               ]
             },
             {
               "source": {
-                "block": "000e1ce6-3bd1-4a3f-99be-848b6cbe262f",
+                "block": "e504d78a-6567-49ef-a8fb-e985194f8be0",
                 "port": "out"
               },
               "target": {
-                "block": "a308e0b3-4f5d-4524-bfda-e0a11fa0fb22",
-                "port": "clk"
+                "block": "839fbc76-8009-4291-8014-e8e9d8dbbf46",
+                "port": "ena"
               },
               "vertices": [
                 {
-                  "x": -296,
-                  "y": -56
+                  "x": -312,
+                  "y": 360
                 },
                 {
-                  "x": 472,
-                  "y": -40
+                  "x": 464,
+                  "y": 264
                 }
               ]
             },
             {
               "source": {
-                "block": "000e1ce6-3bd1-4a3f-99be-848b6cbe262f",
+                "block": "e504d78a-6567-49ef-a8fb-e985194f8be0",
                 "port": "out"
               },
               "target": {
-                "block": "aef4a07f-f052-4461-b5a2-68d94d90f58e",
-                "port": "clk"
+                "block": "b02bb5e9-3a7d-40c4-8498-a363919deedd",
+                "port": "ena"
               },
               "vertices": [
                 {
-                  "x": -296,
-                  "y": -56
+                  "x": -400,
+                  "y": 360
                 },
                 {
-                  "x": 472,
-                  "y": -24
+                  "x": 464,
+                  "y": -80
                 }
               ]
             }
@@ -742,8 +701,8 @@
         },
         "state": {
           "pan": {
-            "x": 603.5,
-            "y": 285.5
+            "x": 808,
+            "y": 401.5
           },
           "zoom": 1
         }
