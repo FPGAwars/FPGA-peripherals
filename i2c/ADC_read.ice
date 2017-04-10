@@ -223,7 +223,7 @@
           "id": "b783ae56-dc89-4640-8df7-808d48c9a41d",
           "type": "basic.code",
           "data": {
-            "code": "\n//-- Initial value of the register\n//-- I2C frame: start (1bit) + addr (7bits) \n\n// 1. LED flash\n// Write ultrasonic -> Write Comand 0x50 in reg 0x00 Flash led                  \n//                      ss              WWAA                AA                AA                AA \n//                      ..A6A5A4A3A2A1A0....R7R6R5R4R3R2R1R0..C7C6C5C4C3C2C1C0..SSSS\n//reg [59:0] data =   60'b001111110000000000110000000000000000110011001100000000110011;\n//reg [59:0] data2  = 60'b110101010101010101010101010101010101010101010101010101010111;\n\n// 2. READ REGISTER\n//READ  ultrasonic - R0 -> return 0x05\n//                      ss              WWAA                AAxxxxSS              RRAATTTTTTTTTTTTTT                NACK \n//                      ..A6A5A4A3A2A1A0    R7R6R5R4R3R2R1R0        A6A5A4A3A2A1A0                  I7I6I5I4I3I2I1I0    SS\n//reg [97:0] data   = 98'b00111111000000000011000000000000000011001100111111000000001111111111111111110000000000000000111001;\n//reg [97:0] data2  = 98'b10010101010101010101010101010101010101010110010101010101010101000000000000000101010101010101010011;\n\n// 3. READ REGISTER\n//READ  ultrasonic - R1 -> returns 0x18                    Repeated start\n//                      ss              WWAA                AAxxxxSS              RRAATTTTTTTTTTTTTT                NACK \n//                      ..A6A5A4A3A2A1A0    R7R6R5R4R3R2R1R0        A6A5A4A3A2A1A0                  I7I6I5I4I3I2I1I0    SS\n//reg [97:0] data   = 98'b00111111000000000011000000000000001111001100111111000000001111111111111111110000000000000000111001;\n//reg [97:0] data2  = 98'b10010101010101010101010101010101010101010110010101010101010101000000000000000101010101010101010011;\n\n// 4. READ RANGE\n// Write ultrasonic -> Write Comand 0x50 (cm) in reg 0x00 Flash led                  \n// Write ultrasonic -> Write Comand 0x51 (in) in reg 0x00 Flash led                  \n// READ value                                                                   \n// auto-single mode, channel 0 selected\n//                        ss              WWAA                AA                AA    TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTss              WWAA                AAxxxxSS              RRAATTTTTTTTTTTTTT                NACK \n//                        ..A6A5A4A3A2A1A0....R7R6R5R4R3R2R1R0..C7C6C5C4C3C2C1C0..SSSS                                        ..A6A5A4A3A2A1A0    R7R6R5R4R3R2R1R0        A6A5A4A3A2A1A0                  I7I6I5I4I3I2I1I0    SS\nreg [197:0] data =   198'b001100001100000000110000000000000000111111000000110000110011111111111111111111111111111111111111111100110000110000000011000000000000110011001100110000110000001111111111111111110000000000000000111001;\nreg [197:0] data2  = 198'b110101010101010101010101010101010101010101010101010101010111111111111111111111111111111111111111111110010101010101010101010101010101010101010110010101010101010101000000000000000101010101010101010011;\n\n\n\n\n//-- Shift register\nalways @(posedge clk)\n  data <= {data[196:0], 1'b1};\n  \n//-- Shift register\nalways @(posedge clk)\n  data2 <= {data2[196:0], 1'b1};\n  \n//-- Send the MSB  \nassign ser = data[197];\nassign ser2 = data2[197];\n\n\n\n",
+            "code": "\n//-- Initial value of the register\n//-- I2C frame: start (1bit) + addr (7bits) \n\n// 1. Write ADC > configuration\n// Write -> Write Comand 0xC4 in reg 0x00                   \n//                        ss              WWAA                AA                AA                AA \n//                        ..A6A5A4A3A2A1A0....R7R6R5R4R3R2R1R0..C7C6C5C4C3C2C1C0..SSSS\n//reg [59:0] data =   60'b001100001100000000000000000000000000001111000000110000000011;\n//reg [59:0] data2  = 60'b100101010101010101010101010101010101010101010101010101010111;\n\n// 2. READ REGISTER\n//READ  0x12 and should provide 0xE0\n//                      ss              WWAA                AAxxxxSS              RRAA                NACK \n//                      ..A6A5A4A3A2A1A0    R7R6R5R4R3R2R1R0        A6A5A4A3A2A1A0    I7I6I5I4I3I2I1I0    SS\nreg [83:0] data   = 84'b001100001100000000000000001100001100000111001100001100000011000000000000000000111001;\nreg [83:0] data2  = 84'b100101010101010101010101010101010101011111100101010101010101010101010101010101010011;\n\n\n\n// 4. START-READ ADC\n// auto-single mode, channel 0 selected\n//                        ss              WWAA                AA                AA    TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTss              WWAA                AAxxxxSS              RRAATTTTTTTTTTTTTT                NACK \n//                        ..A6A5A4A3A2A1A0....R7R6R5R4R3R2R1R0..C7C6C5C4C3C2C1C0..SSSS                                        ..A6A5A4A3A2A1A0    R7R6R5R4R3R2R1R0        A6A5A4A3A2A1A0                  I7I6I5I4I3I2I1I0    SS\n//reg [197:0] data =   198'b001100001100000000000000000000000000001111000000110000000011111111111111111111111111111111111111111100110000110000000011000000000000110011001100110000110000000011111111111111110000000000000000111001;\n//reg [197:0] data2  = 198'b100101010101010101010101010101010101010101010101010101010111111111111111111111111111111111111111111110010101010101010101010101010101010101010110010101010101010101000000000000000101010101010101010011;\n\n\n\n\n//-- Shift register\nalways @(posedge clk)\n  data <= {data[82:0], 1'b1};\n  \n//-- Shift register\nalways @(posedge clk)\n  data2 <= {data2[82:0], 1'b1};\n  \n//-- Send the MSB  \nassign ser = data[83];\nassign ser2 = data2[83];\n\n\n\n",
             "params": [],
             "ports": {
               "in": [
@@ -242,7 +242,7 @@
             }
           },
           "position": {
-            "x": 552,
+            "x": 560,
             "y": 96
           },
           "size": {
@@ -267,6 +267,45 @@
           "position": {
             "x": -224,
             "y": 224
+          }
+        },
+        {
+          "id": "b5edc17d-0a61-41d0-b862-28eeb1466524",
+          "type": "basic.input",
+          "data": {
+            "name": "in",
+            "pins": [
+              {
+                "index": "0",
+                "name": "D0",
+                "value": "119"
+              }
+            ],
+            "virtual": false,
+            "clock": false
+          },
+          "position": {
+            "x": -392,
+            "y": 528
+          }
+        },
+        {
+          "id": "6381f6e3-30db-41ca-bb74-e700ea3ade6f",
+          "type": "basic.output",
+          "data": {
+            "name": "out",
+            "pins": [
+              {
+                "index": "0",
+                "name": "LED7",
+                "value": "104"
+              }
+            ],
+            "virtual": false
+          },
+          "position": {
+            "x": -112,
+            "y": 528
           }
         },
         {
@@ -442,15 +481,25 @@
             "block": "12c0042f-573e-42f5-adad-d0a59776fe26",
             "port": "in"
           }
+        },
+        {
+          "source": {
+            "block": "b5edc17d-0a61-41d0-b862-28eeb1466524",
+            "port": "out"
+          },
+          "target": {
+            "block": "6381f6e3-30db-41ca-bb74-e700ea3ade6f",
+            "port": "in"
+          }
         }
       ]
     },
     "state": {
       "pan": {
-        "x": 581.3447,
-        "y": 275.8323
+        "x": -3.9941,
+        "y": -188.5403
       },
-      "zoom": 0.6856
+      "zoom": 1.3763
     }
   },
   "dependencies": {
