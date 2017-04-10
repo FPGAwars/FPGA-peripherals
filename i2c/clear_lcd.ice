@@ -204,7 +204,7 @@
           "id": "b783ae56-dc89-4640-8df7-808d48c9a41d",
           "type": "basic.code",
           "data": {
-            "code": "\n//-- Initial value of the register\n//-- I2C frame: start (1bit) + addr (7bits) \n// + 1 (read) + 1 (idle ack)\n// + 8 (reg)\n\n//                      ss              WWAA                AA                NACK\n//                      ..A6A5A4A3A2A1A0    R7R6R5R4R3R2R1R0  C7C6C5C4C3C2C1C0    SS\nreg [59:0] data =   60'b001111110000000000110000000000000000110011001100000000111001;\nreg [59:0] data2  = 60'b100101010101010101010101010101010101010101010101010101010011;\n\n//-- Shift register\nalways @(posedge clk)\n  data <= {data[58:0], 1'b1};\n  \n//-- Shift register\nalways @(posedge clk)\n  data2  <= {data2[58:0], 1'b1};\n  \n//-- Send the MSB  \nassign ser = data[59];\nassign ser2 = data2[59];",
+            "code": "\n//-- Initial value of the register\n//-- I2C frame: start (1bit) + addr (7bits) \n\n// CLEAR LCD\n// Write Display -> Write Comand 0x50 in reg 0x00 Flash led                  \n//                      ss              WWAA                AA      CLEAR     AA    \n//                      ..A6A5A4A3A2A1A0....R7R6R5R4R3R2R1R0..C7C6C5C4C3C2C1C0..SSSS            \nreg [59:0] data =   60'b001111000000111100000000000000000000110000000011110000000011;\nreg [59:0] data2  = 60'B110101010101010101010101010101010101010101010101010101010011;\n\n\n\n//-- Shift register\nalways @(posedge clk)\n  data <= {data[58:0], 1'b1};\n  \n//-- Shift register\nalways @(posedge clk)\n  data2 <= {data2[58:0], 1'b1};\n  \n//-- Send the MSB  \nassign ser = data[59];\nassign ser2 = data2[59];\n\n\n\n",
             "params": [],
             "ports": {
               "in": [
@@ -389,10 +389,10 @@
     },
     "state": {
       "pan": {
-        "x": -769.2806,
-        "y": -120.3275
+        "x": -209.6978,
+        "y": -35.2257
       },
-      "zoom": 1.9717
+      "zoom": 0.8785
     }
   },
   "dependencies": {

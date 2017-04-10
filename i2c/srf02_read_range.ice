@@ -204,7 +204,7 @@
           "id": "b783ae56-dc89-4640-8df7-808d48c9a41d",
           "type": "basic.code",
           "data": {
-            "code": "\n//-- Initial value of the register\n//-- I2C frame: start (1bit) + addr (7bits) \n// + 1 (read) + 1 (idle ack)\n// + 8 (reg)\n// Write                  \n//                      ss              WWAA                AA                AA                AA \n//                      ..A6A5A4A3A2A1A0....R7R6R5R4R3R2R1R0..C7C6C5C4C3C2C1C0..SSSS\n//reg [59:0] data =   60'b001111110000000000110000000000000000110011001100000000110011;\n//reg [59:0] data2  = 60'b110101010101010101010101010101010101010101010101010101010111;\n\n//READ                                                         \n//                       ss             WWAA                AAxxxxSS              RRAA                            NACK \n//                      ..A6A5A4A3A2A1A0    R7R6R5R4R3R2R1R0        A6A5A4A3A2A1A0    TTTTTTTTTTTTI7I6I5I4I3I2I1I0    SS\nreg [95:0] data   = 96'b001111110000000000110000000000000011110011001111110000000011111111111111110000000000000000111001;\nreg [95:0] data2  = 96'b100101010101010101010101010101010101010101100101010101010101010000000000000101010101010101010011;\n\n\n//-- Shift register\nalways @(posedge clk)\n  data <= {data[94:0], 1'b1};\n  \n//-- Shift register\nalways @(posedge clk)\n  data2 <= {data2[94:0], 1'b1};\n  \n//-- Send the MSB  \nassign ser = data[95];\nassign ser2 = data2[95];",
+            "code": "\n//-- Initial value of the register\n//-- I2C frame: start (1bit) + addr (7bits) \n\n// 4. READ RANGE\n// Write ultrasonic -> Write Comand 0x50 (cm) in reg 0x00 Flash led                  \n// Write ultrasonic -> Write Comand 0x51 (in) in reg 0x00 Flash led                  \n// READ value                                                                                                          \n//                        ss              WWAA                AA                AA    TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTss              WWAA                AAxxxxSS              RRAATTTTTTTTTTTTTT                NACK \n//                        ..A6A5A4A3A2A1A0....R7R6R5R4R3R2R1R0..C7C6C5C4C3C2C1C0..SSSS                                        ..A6A5A4A3A2A1A0    R7R6R5R4R3R2R1R0        A6A5A4A3A2A1A0                  I7I6I5I4I3I2I1I0    SS\nreg [197:0] data =   198'B001111110000000000110000000000000000110011001100000011110011111111111111111111111111111111111111111100111111000000000011000000000000111111001100111111000000001111111111111111110000000000000000111001;\nreg [197:0] data2  = 198'b110101010101010101010101010101010101010101010101010101010111111111111111111111111111111111111111111110010101010101010101010101010101010101010110010101010101010101000000000000000101010101010101010011;\n\n\n\n//-- Shift register\nalways @(posedge clk)\n  data <= {data[196:0], 1'b1};\n  \n//-- Shift register\nalways @(posedge clk)\n  data2 <= {data2[196:0], 1'b1};\n  \n//-- Send the MSB  \nassign ser = data[197];\nassign ser2 = data2[197];\n\n\n\n",
             "params": [],
             "ports": {
               "in": [
@@ -389,10 +389,10 @@
     },
     "state": {
       "pan": {
-        "x": -246.5086,
-        "y": -67.372
+        "x": 9.5333,
+        "y": 40.2009
       },
-      "zoom": 1.3763
+      "zoom": 1.2922
     }
   },
   "dependencies": {
