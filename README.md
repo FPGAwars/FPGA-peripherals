@@ -17,6 +17,6 @@ Licensed under a  [Creative Commons Attribution-ShareAlike 4.0 International Lic
 
 # Credits
 
- ![](https://github.com/FPGAwars/FPGA-peripherals/raw/master/images/bq-logo-cc-sa-small-150px.png)
+* [BQ](https://www.bq.com) sponsored this project from 2015-07-01 to 2016-04-14. Thanks
 
- This work was sponsored by BQ from 2015-07-1 to 2016-04-14.  Thanks!
+  <img src="https://github.com/FPGAwars/icezum/raw/master/wiki/bq-logo.png" width="80">
