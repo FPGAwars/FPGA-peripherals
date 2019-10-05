@@ -1,15 +1,15 @@
-### Controlador MAX7912 para Icestudio.
+# Controlador MAX7912 para Icestudio.
 
 ![](https://groups.google.com/group/fpga-wars-explorando-el-lado-libre/attach/44f4e69b43eb/SPI7SEGDISPLAY.jpg?part=0.4&view=1&authuser=0)
 
-# MAX7912.ice:
+### MAX7912.ice:
 Es el controlador SPI de 16 bits para el MAX7912.
 
-# SPI16master.ice:
+### SPI16master.ice:
 Es un controlador SPI maestro de 16bits (trabaja en modo 0). Este circuito es una modificación del SPI maestro de 8bits
 que diseñó Obijuan.
 
-# SerialMAX7912.ice:
+### SerialMAX7912.ice:
 Es un ejemplo para utilizarlar el MAX7912 desde el puerto serie.
 
 ## Funcionamiento:
