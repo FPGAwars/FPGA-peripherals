@@ -1,0 +1,3 @@
+#FT_245 Synchronous FIFO protocol
+
+The FT_245 synchronous FIFO protocol enables high bandwidth communication over a parallel interface from a PC to the FPGA board. The file was tested with the FT232H and FT2232H modules. Both of which supported upto 336 Mbps. This is very close to the promised USB 2.0 speeds and largely outperforms common serial protocols like I2C and SPI.
