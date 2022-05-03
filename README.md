@@ -10,6 +10,7 @@ an **Icestick FPGA board**, using [Apio](https://github.com/FPGAwars/apio) and t
 
 * Juan González-Gómez (Obijuan)
 * Jesús Arroyo Torrens
+* Ravi Pradip
 
 # License
 
